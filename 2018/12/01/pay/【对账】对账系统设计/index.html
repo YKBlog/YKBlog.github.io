@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 |　支付金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【对账】对账系统设计 - 杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://gitkeven.github.io/2018/12/01/pay/【对账】对账系统设计/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-pay.jpeg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                            
+                              <a class="tag" href="/tags/#对账" title="对账">对账</a>
+                            
+                        </div>
+                        <h1>【对账】对账系统设计</h1>
+                        <h2 class="subheading">通用的三方对账系统架构设计</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-12-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="对账整体设计">对账整体设计</h2>
+<hr>
+<p>从整体来看，按照时序维度的先后，系统对账主要分为三阶段的工作。分别是数据准备、数据核对和差错处理。</p>
+<ul>
+<li>数据准备细分一下，又分为文件获取、文件解析、数据清洗。</li>
+</ul>
+<p>在对账专业概念中，数据核对和差错处理又叫轧账和平账。
+<strong>具体设计脑图如下:</strong>
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/check-arch.png?token=AL-iaGKs5fAA04I7WxQvcAcN8e2g6XuRks5cOcttwA%3D%3D" alt=""></p>
+<h2 id="对账各个模块设计">对账各个模块设计</h2>
+<hr>
+<h3 id="数据准备">数据准备</h3>
+<p>数据准备，顾名思义，我们需要把对账所需的全部数据，接入到我们的对账系统。</p>
+<blockquote>
+<p>该模块主要实现两个目标：</p>
+<ul>
+<li>为不同的外部系统提供多元化的接入机制。</li>
+<li>通过数据适配的手段把外部数据以统一的格式进行转换和存储。</li>
+</ul>
+</blockquote>
+<p>在数据接入层，我们会针对不同的数据接入方提供三种不同的数据接入模式。如下图：
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/check-data-deal.png?token=AL-iaJ1Mg4lVuJL-JUXzRrtlOQW3U9a-ks5cOtfNwA%3D%3D" alt=""></p>
+<h4 id="数据拉取">数据拉取</h4>
+<p>主动拉取数据，并通过数据适配的方式，将数据存储到对账数据池中。</p>
+<h4 id="数据推送">数据推送</h4>
+<p>指定标准规范和格式，供各个接入方使用，统一格式推送到对账服务。</p>
+<h4 id="人工上传">人工上传</h4>
+<p>提供标准的文件模板，由业务接入方填充数据，通过后台文件上传或SFTP上传工具的方式将数据上传到对账服务。
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/check-data-file.png?token=AL-iaHcu_z2Sw8Am4mauM6yKXzoM4XiFks5cOtgrwA%3D%3D" alt="">
+人工上传文件处理方式步骤如下：</p>
+<ol>
+<li>下载文件
+从指定SFTP服务器下载文件。</li>
+<li>解压文件
+一般为zip压缩包，节省存储空间，提高上传和下载速度。</li>
+<li>解析文件
+一般文件格式为EXCEL（财务人工上传文件，一般从银行或第三方支付后台下载）、CSV（数据接入方一般从数据库导出格式，或第三方支付提供的文件格式）、TXT。</li>
+<li>存储数据
+将第三步得到的数据存储、持久化到数据库，一般底稿数据都存储最全数方便问题追溯。</li>
+</ol>
+<h3 id="数据清洗">数据清洗</h3>
+<blockquote>
+<p>顾名思义，即对准备的上下游数据进行清洗。</p>
+</blockquote>
+<p>清洗的作用或原因：
+<strong>从底稿提取对账核心字段</strong>
+一般参与对账的字段就几个，具体字段：银行卡号、银行单号、业务单号、支付金额、支付方式、支付完成时间、核对状态。
+上文提到底稿一般建议存储所有数据，数据太多影响对账性能和效率。
+<strong>合并、排除无用数据</strong>
+上文提到底稿一般建议存储所有数据，难免有无用数据需要剔除，或者排除业务或财务指定无需对账的数据；合并特殊业务或流程产生的N对1数据。</p>
+<h3 id="数据核对">数据核对</h3>
+<p><strong>对账的核心</strong>
+数据核对是对账的核心，对账的主逻辑；一般对账方式有两种，即对明细账和对总账，对总账一般包括总金额和总条目。一般做法为对明细账，即上下游每条记录逐一比对。
+<strong>核对的结果</strong></p>
+<blockquote>
+<p>核对一般就是两个结果：对上帐和对不上账，对不上账有分三种结果，上游单边（支付中一般称为企业单边，即长款），下游单边（支付中一般称为银行边，即漏单），金额不等（即两边都有数据，金额对不上）。</p>
+</blockquote>
+<p>设计normal和different两张表，分别存储不同的核对结果数据，方便后期统计以及为业务提供能力。
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/check-data-check.png?token=AL-iaEUoE-GXROoUno2ljnOpt2v5czECks5cOtdTwA%3D%3D" alt="">
+具体对账的方法有多种，比如：</p>
+<ol>
+<li>sql核对
+exist  insert select    minus；最简单的方式，也是问题比较多方式，对数据库压力比较大，数据特别多的时候，对账效率比较低。</li>
+<li>redis核对
+set集合分别diff （inter）上游、下游数据；比较好的方式，可以降低数据库压力，redis方便根据数据量做水平扩展，</li>
+<li>sprak核对
+采用流式运算进行比对；（具体做法待扩展）</li>
+</ol>
+<h3 id="差错处理">差错处理</h3>
+<p>在一般系统中，差错处理分为两种，一种人工来处理，一种系统自动来处理。
+人工处理一般两个操作：平账和勾兑，勾兑一般处理的是单边情况，比如由于系统bug出现的单边问题，经由人工溯源修复bug之后，相关业务人员即可在对账后台将该条数据进行勾兑。
+系统自动处理一般为：自动补单和驱动下游流程完成两种方式。主要有如下情况：
+<strong>下游单边（银行单边）情况</strong>
+业务未支付，支付渠道已支付。这主要是本地未正确接收到渠道下发的异步通知导致。
+一般处理是将本地状态修改为已支付，并做响应的后续处理，比如通知业务方等。
+<strong>上游单边（企业单边）情况</strong>
+业务已支付，但是支付渠道中无记录；或者本地无记录，支付渠道有记录。
+在排除跨日因素外，这种情况非常少见，需要了解具体原因后做处理。
+<strong>金额不等情况</strong>
+业务已支付，支付渠道已支付，但是金额不同，这个需要人工核查。</p>
+<h3 id="对账统计">对账统计</h3>
+<p>根据对账处理结果，统计的数据由：汇总总条目、汇总总金额、汇总差异结果、汇总单边结果、汇总处理结果。
+业务和财务关系的统计的相关信息有：对账完成时间、对账是否成功、平账的金额和订单数、差错的金额和订单数、缓存池金额和订单数等。
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/check-result.png?token=AL-iaIS5yB3-rU83NGfc-sQl9idTFjaRks5cOtjxwA%3D%3D" alt=""></p>
+<h2 id="对账系统相关设计">对账系统相关设计</h2>
+<hr>
+<h3 id="分布式定时系统">分布式定时系统</h3>
+<ul>
+<li>一般对账系统都是N+1离线对账，所有上述所有模块的设计一般使用定时任务去执行。不可能所有模块、所有银行卡都用一个任务去执行，也不可能只用一台机器去执行，这样一天可能都跑不完所有的数据。</li>
+<li>所以考虑到优化，一般设置为集群分布式的去跑任务，所以涉及一个分布式定时系统对对账系统来说很重要，考虑成本和时间问题，可以简单实现分布式任务效果。分布式定时系统的设计后续再单独探讨。</li>
+<li>即使所有任务都按模块化去进行划分，按模块化单独起任务去执行业务逻辑，也会存在时间效率的瓶颈（因为下文提到的依赖关系，导致并不能让所有的任务都并行起来）。</li>
+<li>再加上银行卡号比较多的情况下，最好情况就是各个银行卡号并行处理，即并发粒度设计到银行卡号维度，使用多线程把所有银行卡的对账任务并行起来。</li>
+</ul>
+<h3 id="依赖链设计">依赖链设计</h3>
+<p>所有模块是存在依赖关系的，比如清洗之前，肯定要数据准备完成；但是上游数据和下游数据的准备、清洗可以并发的执行。整体依赖链如下：
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/check-depend.png?token=AL-iaKsTcHlYOTSvOsB_MFdCQhihpwwIks5cOtjYwA%3D%3D" alt=""></p>
+<h3 id="核心对账优化">核心对账优化</h3>
+<p>上文模块设计有提到核心对账的多种实现思路，这里推荐的两种：</p>
+<ol>
+<li>redis 实现</li>
+<li>sprak 实现<br>
+具体实现过程会在后续博文中详细介绍。</li>
+</ol>
+<h2 id="对账系统数据库模型">对账系统数据库模型</h2>
+<hr>
+<p>按以上设计模型，具体数据模型如下介绍。</p>
+<h3 id="底稿数据表">底稿数据表</h3>
+<ul>
+<li>各个上游数据、下游数据抓取、解析的底稿数据 。</li>
+<li>不只两张表，由具体业务决定；数据量比较大，一般按日期水平分表，按实际业务考虑要不要垂直分表</li>
+</ul>
+<h3 id="清洗表">清洗表</h3>
+<ul>
+<li>从各个上游数据、下游数据的底稿数据取部分字段。</li>
+<li>不只两张表，由具体业务决定；数据量比较大，一般按日期分表。</li>
+</ul>
+<h3 id="对账结果表">对账结果表</h3>
+<ul>
+<li>正常表
+用来存放对上账的数据(即对账结果正常的数据，一般数据量比较大，需要按日期分表)</li>
+<li>异常表
+用来存放对不上账的数据（上游单边、下游单边、金额不等）。</li>
+</ul>
+<h3 id="对账汇总表">对账汇总表</h3>
+<p>即对对账数据的汇总</p>
+<h3 id="技术相关表">技术相关表</h3>
+<p>定时配置、账户配置、异常信息等等相关表</p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/10/05/pay/【账务】账务业务知识/" data-toggle="tooltip" data-placement="top" title="【账务】账务业务知识">下一篇 &rarr;</a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#对账整体设计"><span class="toc-nav-text">对账整体设计</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#对账各个模块设计"><span class="toc-nav-text">对账各个模块设计</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#数据准备"><span class="toc-nav-text">数据准备</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#数据拉取"><span class="toc-nav-text">数据拉取</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#数据推送"><span class="toc-nav-text">数据推送</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#人工上传"><span class="toc-nav-text">人工上传</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#数据清洗"><span class="toc-nav-text">数据清洗</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#数据核对"><span class="toc-nav-text">数据核对</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#差错处理"><span class="toc-nav-text">差错处理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#对账统计"><span class="toc-nav-text">对账统计</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#对账系统相关设计"><span class="toc-nav-text">对账系统相关设计</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#分布式定时系统"><span class="toc-nav-text">分布式定时系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#依赖链设计"><span class="toc-nav-text">依赖链设计</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#核心对账优化"><span class="toc-nav-text">核心对账优化</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#对账系统数据库模型"><span class="toc-nav-text">对账系统数据库模型</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#底稿数据表"><span class="toc-nav-text">底稿数据表</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#清洗表"><span class="toc-nav-text">清洗表</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#对账结果表"><span class="toc-nav-text">对账结果表</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#对账汇总表"><span class="toc-nav-text">对账汇总表</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#技术相关表"><span class="toc-nav-text">技术相关表</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                        
+                          <a class="tag" href="/tags/#对账" title="对账">对账</a>
+                        
+                    </div>
+                </section>
+                
+            
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;">
+
+
+ <!--友链-->
+
+    <hr>
+    <h5>友链</h5>
+    <ul class="list-inline">
+
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '31092bbdb23c158191a4',
+        clientSecret: '463191ce71c077f5a498222788a4ec1db633a5f8',
+        id: window.location.pathname,
+        repo: 'gitkeven.github.io',
+        owner: 'gitkeven',
+        admin: 'gitkeven',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591">
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://blog.csdn.net/yangkai_hudong">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">C</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">知</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="http://weibo.com/CSDNyangkai">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://github.com/gitkeven">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://gitkeven.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=gitkeven.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://gitkeven.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 |　支付金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【账户】账户体系-账户建模 - 杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://gitkeven.github.io/2018/09/02/pay/【账户】账户体系-账户建模/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-pay.jpeg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                            
+                              <a class="tag" href="/tags/#账务" title="账务">账务</a>
+                            
+                              <a class="tag" href="/tags/#账户" title="账户">账户</a>
+                            
+                        </div>
+                        <h1>【账户】账户体系-账户建模</h1>
+                        <h2 class="subheading">大账务系统-账户体系-账户建模</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-09-02
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="账户建模要素">账户建模要素</h2>
+<hr>
+<h3 id="考虑要素">考虑要素</h3>
+<blockquote>
+<p>在支付系统中，账户的建模，主要是从如下几个方面来考虑：</p>
+</blockquote>
+<ul>
+<li><strong>交易的需求</strong>: 比如检查账户是否被锁定、余额是否足够、是否有效等。</li>
+<li><strong>记账的需求</strong>: 按照公司会计需求记录账户上的所有行为，包括支出、充值、转账等。</li>
+<li><strong>对账的需求</strong>: 包括和支付渠道、商户、个人的对账需求，核对交易和账户余额是否正确。</li>
+<li><strong>风控的需求</strong>: 如反洗钱、反欺诈等，都需要依赖于账户体系来提供核心数据。</li>
+<li><strong>信用的需求</strong>: 对用户、资产、商户等主体进行信用评估时，也需要依赖账户体系来提供的核心数据。</li>
+</ul>
+<blockquote>
+<p>这五个需求，按照其设计的优先级，也是从交易（支付）、记账、对账、风控来进行。<br>
+支付系统根据其发展所处的阶段，逐步将新增需求纳入设计中。说了这么多，目的是为了对账户建模。<br>
+账户模型是和公司业务密切相关的，公司不同规模，发展的不同阶段需要不同的模型。从交易模型中可以衍生出针对各个角色的账户流水，即明细模型，用于支持对账。根据业务需要，可以设置多种账户，如支付账户、预付卡账户、代扣账户、零钱账户、结算账户等。</p>
+</blockquote>
+<h3 id="账户设置">账户设置</h3>
+<p><strong>模型图如下</strong><br>
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/account-pay-account.png" alt=""></p>
+<h4 id="账户类型">账户类型</h4>
+<blockquote>
+<p>从类别上来说，这里的账户，一般指总账账户。一般来说电商系统中涉及的账户类型有：</p>
+</blockquote>
+<ul>
+<li><strong>虚拟币账户</strong>：用户和使用虚拟币的商户都需要建立虚拟币账户；</li>
+<li><strong>代扣账户</strong>： 用来支持订阅类型的定期代扣；</li>
+<li><strong>零钱账户</strong>：电商的内部账号，用户、商户、清算单位需要建立零钱账户。</li>
+<li><strong>第三方支付账户</strong>：用户在第三方支付机构建立的账户。</li>
+<li><strong>银行卡账户</strong>：用户的银行卡信息，每个卡对应一个账户。</li>
+<li><strong>结算账户</strong>：用来支持和第三方支付公司、银行进行结算用，第三方支付需要为每个商户号建立结算账户；银行需要为借记卡、贷记卡分别建立结算账户，一般在银行卡直连时使用。</li>
+<li><strong>代扣代缴账户</strong>：用来支持代扣税款业务。</li>
+</ul>
+<h4 id="账户属性">账户属性</h4>
+<blockquote>
+<p>对这些账户，需要设置如下属性，基本属性，包括：</p>
+</blockquote>
+<ul>
+<li><strong>账户号（或账户 ID）</strong> 一般是系统自动生成。特别注意的是，要事先约定好账户 ID 的规则，比如头三位用来表示账户类型，后几位用来表示账户编号等，务必保证根据账号号能够快速确定账户类型，并且保证账户号是不重复的。</li>
+<li><strong>账户名称</strong> 一般是由用户自己设置的，显示用。</li>
+<li><strong>货币类型</strong> 注意虽然一张银行卡可以支持多个币种，实际在内部，还是针对每个币种建立独立的子账户。涉及到多币种的账户，也可以采用类似的建模方案。</li>
+<li><strong>会计科目代码</strong> 一般是一级会计科目的代码。</li>
+</ul>
+<h4 id="账户控制">账户控制</h4>
+<ul>
+<li>是否允许充值；</li>
+<li>是否允许提现；</li>
+<li>是否允许透支；</li>
+<li>是否允许支付；</li>
+<li>是否允许转账进入；</li>
+<li>是否允许转账转出；</li>
+<li>是否有安全保障；</li>
+<li>是否激活；</li>
+<li>是否冻结。</li>
+</ul>
+<h4 id="资金相关">资金相关</h4>
+<ul>
+<li>当前账户余额，等于可用余额+冻结余额；</li>
+<li>当前账户可用余额；</li>
+<li>当前账户冻结的余额，冻结余额指在账户上暂不能使用的额度。在支付的时候，往往是先冻结，商品出库后，再实际执行扣款。</li>
+</ul>
+<h4 id="银行卡-第三方支付信息">银行卡、第三方支付信息</h4>
+<ul>
+<li>第三方实体的 ID；</li>
+<li>第三方账号，如银行卡号或者在第三方支付的open_id等；</li>
+<li>第三方的app_id；</li>
+<li>账号的失效日期，该账号什么时候失效。</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>：有些第三方信息是不能保存的，如用户的账号密码、信用卡的 CV 号等。为了避免账户信息被爬库或者数据库信息意外泄露，一般还需要对敏感字段，如密码等，进行加密保存，甚至保存到另外的表中。更进一步，为了避免账户信息被意外修改，还可以增加一个校验字段，在写入数据时设置该字段，在读取数据时做校验，一旦发现数据有问题，则关闭该账号。</p>
+</blockquote>
+<h2 id="账户建模设计">账户建模设计</h2>
+<hr>
+<h3 id="账户的基本信息">账户的基本信息</h3>
+<ul>
+<li>账户号</li>
+<li>账户类型</li>
+<li>余额</li>
+<li>币种</li>
+<li>账户状态</li>
+<li>开户时间</li>
+</ul>
+<h3 id="账户的基本功能">账户的基本功能</h3>
+<ul>
+<li>基础功能
+开户、销户；冻结、解冻；</li>
+<li>业务功能
+充值、提现；入账、转账、对账；冲正、扣款；</li>
+<li>业务需求
+账户查询、流水查询</li>
+<li>系统功能
+核算、校验、快照备份</li>
+</ul>
+<h3 id="账户用例-仅记录商户侧">账户用例（仅记录商户侧）</h3>
+<h4 id="开户">开户</h4>
+<blockquote>
+<p>商户A是一家电商平台，接入支付系统快捷支付；对于手续费征收，采取收支两线，并预存手续费10000元，交易手续费费率为1%；同时因为该商户资质较好，交易时采取D0（T+0）实时结算。<br>
+商户开户，根据商户交易特点，需开通以下账户：</p>
+</blockquote>
+<ul>
+<li><strong>待结算户</strong>：用户在商户交易完成后，资金进入该账户。</li>
+<li><strong>基本户</strong>：商户的余额户，可体现，交易结算后，资金进入该账户。</li>
+<li><strong>手续费户</strong>：专门用来存放手续费的账户。</li>
+</ul>
+<p><strong>开户后各账户余额如下</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">阶段</th>
+<th style="text-align:center">时间点</th>
+<th style="text-align:left">待结算账户</th>
+<th style="text-align:left">基本户</th>
+<th style="text-align:left">手续费户</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">开户</td>
+<td style="text-align:center">–</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">10000</td>
+</tr>
+</tbody>
+</table>
+<h4 id="收单交易">收单交易</h4>
+<blockquote>
+<p>某用户上午9点在A电商平台上使用快捷支付购买1000元的手机，交易完成后，A商户待结算户增加1000元。手续费按照1%标准征收，由商户支出，故该笔交易手续费为：1000*1%=10元，计入手续费户，手续费剩9990元。支付公司设置D0结算时间节点为每天下午4点。下午4点后，待结算户资金结转至基本户。</p>
+</blockquote>
+<p><strong>账户变动如下</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">阶段</th>
+<th style="text-align:center">时间点</th>
+<th style="text-align:left">待结算账户</th>
+<th style="text-align:left">基本户</th>
+<th style="text-align:left">手续费户</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">开户</td>
+<td style="text-align:center">–</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">10000</td>
+</tr>
+<tr>
+<td style="text-align:center">收单</td>
+<td style="text-align:center">9：00</td>
+<td style="text-align:left">1000</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">9990</td>
+</tr>
+<tr>
+<td style="text-align:center">结算</td>
+<td style="text-align:center">16：00</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">1000</td>
+<td style="text-align:left">9990</td>
+</tr>
+</tbody>
+</table>
+<h4 id="提现">提现</h4>
+<blockquote>
+<p>A商户在下午4：30时，发起提现600元，商户提现手续费按笔征收，每笔2元。商户提现600后，基本户剩400元，同时每笔需付出手续费2元，手续费户剩余9988元。</p>
+</blockquote>
+<p><strong>账户变动如下</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">阶段</th>
+<th style="text-align:center">时间点</th>
+<th style="text-align:left">待结算账户</th>
+<th style="text-align:left">基本户</th>
+<th style="text-align:left">手续费户</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">开户</td>
+<td style="text-align:center">–</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">10000</td>
+</tr>
+<tr>
+<td style="text-align:center">收单</td>
+<td style="text-align:center">9：00</td>
+<td style="text-align:left">1000</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">9990</td>
+</tr>
+<tr>
+<td style="text-align:center">结算</td>
+<td style="text-align:center">16：00</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">1000</td>
+<td style="text-align:left">9990</td>
+</tr>
+<tr>
+<td style="text-align:center">提现</td>
+<td style="text-align:center">16：30</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">400</td>
+<td style="text-align:left">9988</td>
+</tr>
+</tbody>
+</table>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2018/10/01/pay/【账务】会计科目/" data-toggle="tooltip" data-placement="top" title="【账务】会计科目">&larr; 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/09/02/pay/【账户】账户体系-账户设计/" data-toggle="tooltip" data-placement="top" title="【账户】账户体系-账户设计">下一篇 &rarr;</a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#账户建模要素"><span class="toc-nav-text">账户建模要素</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#考虑要素"><span class="toc-nav-text">考虑要素</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#账户设置"><span class="toc-nav-text">账户设置</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#账户类型"><span class="toc-nav-text">账户类型</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#账户属性"><span class="toc-nav-text">账户属性</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#账户控制"><span class="toc-nav-text">账户控制</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#资金相关"><span class="toc-nav-text">资金相关</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#银行卡-第三方支付信息"><span class="toc-nav-text">银行卡、第三方支付信息</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#账户建模设计"><span class="toc-nav-text">账户建模设计</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#账户的基本信息"><span class="toc-nav-text">账户的基本信息</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#账户的基本功能"><span class="toc-nav-text">账户的基本功能</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#账户用例-仅记录商户侧"><span class="toc-nav-text">账户用例（仅记录商户侧）</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#开户"><span class="toc-nav-text">开户</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#收单交易"><span class="toc-nav-text">收单交易</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#提现"><span class="toc-nav-text">提现</span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                        
+                          <a class="tag" href="/tags/#账务" title="账务">账务</a>
+                        
+                          <a class="tag" href="/tags/#账户" title="账户">账户</a>
+                        
+                    </div>
+                </section>
+                
+            
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;">
+
+
+ <!--友链-->
+
+    <hr>
+    <h5>友链</h5>
+    <ul class="list-inline">
+
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '31092bbdb23c158191a4',
+        clientSecret: '463191ce71c077f5a498222788a4ec1db633a5f8',
+        id: window.location.pathname,
+        repo: 'gitkeven.github.io',
+        owner: 'gitkeven',
+        admin: 'gitkeven',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591">
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://blog.csdn.net/yangkai_hudong">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">C</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">知</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="http://weibo.com/CSDNyangkai">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://github.com/gitkeven">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://gitkeven.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=gitkeven.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://gitkeven.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

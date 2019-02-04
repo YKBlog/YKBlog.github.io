@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 |　支付金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://gitkeven.github.io/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header/bg-auto-home.gif') 
+            /*config*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="site-heading">
+                        <h1>YangKai Blog</h1>
+                        <!--<hr class="small">-->
+                        <span class="subheading">🌝 Be the best Java engineer！🌚</span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Main Content -->
+<div class="container">
+    <div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+            
+                <!-- Main Content -->
+
+
+<div class="post-preview">
+
+    <a href="/2018/12/01/pay/【对账】对账系统设计/">
+        <h2 class="post-title">
+            【对账】对账系统设计
+        </h2>
+        <h3 class="post-subtitle">
+            通用的三方对账系统架构设计
+        </h3>
+        <div class="post-content-preview">
+            对账整体设计
+
+从整体来看，按照时序维度的先后，系统对账主要分为三阶段的工作。分别是数据准备、数据核对和差错处理。
+
+数据准备细分一下，又分为文件获取、文件解析、数据清洗。
+
+在对账专业概念中，数据核对和差错处理又叫轧账和平账。
+具体设计脑图如下:
+
+对账各个模块设计
+
+数据准备
+数据准备，顾名思义，我们需要把对账所需的全部数据，接入到我们的对账系统。
+
+该模块主要实现两个目标：
+
+为不同的......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-12-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#对账" title="对账">对账</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/10/05/pay/【账务】账务业务知识/">
+        <h2 class="post-title">
+            【账务】账务业务知识
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-账务业务知识
+        </h3>
+        <div class="post-content-preview">
+            会计相关
+
+
+
+这里只罗列一下重点核心的业务概念和知识，对财务相关知识不是那么感兴趣的，下面知识足够了；
+对财务知识感情的，更多内容参看：   和  
+
+
+复式记账
+定义
+定义：以“借”和“贷”为记账符号的一种复式记账的方法。
+复式记账法是指对每一笔经济业务都要以相等的金额，同时在两个或两个以上相互联系的账户中进行登记的记账方法。
+特点
+
+以“借”、“贷”为记帐符号，每个账户分借贷两方。
+“......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-10-05
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/10/01/pay/【账务】复式记账/">
+        <h2 class="post-title">
+            【账务】复式记账
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-会计知识-复式记账
+        </h3>
+        <div class="post-content-preview">
+            概念和特征
+
+复式记账的概念
+复式记账法是指对每一笔经济业务都要以相等的金额，同时在两个或两个以上相互联系的账户中进行登记的记账方法。
+
+对每项经济业务按相等金额在两个或两个以上有关账户中同时进行登记的方法。
+复式记账的理论依据是会计基本等式。
+复式记账按记账符号，记账规则、试算平衡方法的不同，可分为借贷记账法，增减记账法和收付记账法。
+借贷记账法是一种最杂的、当今运用最广泛的复式记账法也是......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-10-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+              <a href="/tags/#会计" title="会计">会计</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/10/01/pay/【账务】会计基础/">
+        <h2 class="post-title">
+            【账务】会计基础
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-会计知识-会计基础
+        </h3>
+        <div class="post-content-preview">
+            会记的基本特征
+
+
+会记以货币为计算单位
+
+会记拥有一系列专门方法
+
+
+核算方法
+分析方法
+检查方法
+
+
+
+设置账户
+复式记账
+
+
+定义： 任何一笔经济业务都以相等的金额在两个或以上账户中相互联系登记
+
+
+填制和审核会记凭证
+
+
+会记凭证用来记录经济业务、明确经济业务责任
+
+
+登记帐簿
+成本计算
+财产清查
+编制会记报表
+
+会记元素和科目
+
+会记元素
+
+六大要素
+资产、负债、所有者权益、收入、......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-10-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+              <a href="/tags/#会计" title="会计">会计</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/10/01/pay/【账务】会计科目/">
+        <h2 class="post-title">
+            【账务】会计科目
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-会计知识-会计科目
+        </h3>
+        <div class="post-content-preview">
+            会计科目分类
+
+会计要素
+
+六大要素
+资产、负债、所有者权益、收入、费用、利润
+
+会计科目分类方法
+科目分类设置依据
+
+
+资产类科目基本是按照其流动性快慢排列的
+负债类科目基本是按照其偿还期限的短长排列的
+所有者权益类科目是按照其永久性程度高低排列的
+成本及损益类会计科目是按照类别及重要性程度大小排列的
+
+
+具体分类
+
+对会记要素的具体内容进行分类核算的项目。
+
+按归属分类
+
+五大类
+资产类......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-10-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+              <a href="/tags/#会计" title="会计">会计</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/09/02/pay/【账户】账户体系-账户建模/">
+        <h2 class="post-title">
+            【账户】账户体系-账户建模
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-账户体系-账户建模
+        </h3>
+        <div class="post-content-preview">
+            账户建模要素
+
+考虑要素
+
+在支付系统中，账户的建模，主要是从如下几个方面来考虑：
+
+
+交易的需求: 比如检查账户是否被锁定、余额是否足够、是否有效等。
+记账的需求: 按照公司会计需求记录账户上的所有行为，包括支出、充值、转账等。
+对账的需求: 包括和支付渠道、商户、个人的对账需求，核对交易和账户余额是否正确。
+风控的需求: 如反洗钱、反欺诈等，都需要依赖于账户体系来提供核心数据。
+信用的需......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-09-02
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+              <a href="/tags/#账户" title="账户">账户</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/09/02/pay/【账户】账户体系-账户设计/">
+        <h2 class="post-title">
+            【账户】账户体系-账户设计
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-账户体系-账户设计
+        </h3>
+        <div class="post-content-preview">
+            账户概念
+
+账户设置，一般是从交易开始的。 交易的实现必须有账户的支持，账户是交易的基本构成元素。
+
+从支付系统的角度，交易中涉及到的资金流是资金从一个账户流向另一个账户。发起交易的一方，被称之为交易主体，他可以是个人，也可以是一个机构。
+资金从该主体所拥有的账户中流出。 而接收交易的一方，被称为交易对手，他也可以是个人，或者机构。
+
+账户体系介绍
+
+
+账户体系设计整体原则是参考会计学原理关......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-09-02
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+              <a href="/tags/#账户" title="账户">账户</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/09/01/pay/【账户】账户体系-三户模型/">
+        <h2 class="post-title">
+            【账务】账户体系-三户模型
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-账户体系-三户模型
+        </h3>
+        <div class="post-content-preview">
+            概述
+
+背景
+
+三户模型最早是在增强型电信运营图（Enhanced Telecom Operations Map，eTOM）中提出，在电信行业中得到广泛使用。
+三户指客户（Customer）、用户（User）和账户(Account)。
+eTOM 引入是电信行业营销模型转向“以客户为中心”的理念而产生的成果。围绕客户建立用户和账户，这三个是相互关联的实体。近年来，金融行业也逐步接受和采用了三户......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-09-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+              <a href="/tags/#账户" title="账户">账户</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2018/04/01/arch/【设计模式】单例模式/">
+        <h2 class="post-title">
+            【设计模式】单例模式
+        </h2>
+        <h3 class="post-subtitle">
+            设计模式-单例模式的七种写法-Java实现
+        </h3>
+        <div class="post-content-preview">
+            整体介绍
+
+介绍
+
+单例模式（Singleton Pattern） 是 Java 中最简单的设计模式之一。
+这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。
+意图：保证一个类仅有一个实例，并提供一个访问它的全局访问点。
+
+
+这种模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-04-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#架构" title="架构">架构</a>
+            
+              <a href="/tags/#设计模式" title="设计模式">设计模式</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    
+</ul>
+
+
+
+                <!-- 评论 -->
+                
+
+            </div>
+
+          <!-- Sidebar Container -->
+<div class="
+    col-lg-3 col-lg-offset-0
+    col-md-3 col-md-offset-0
+    col-sm-12
+    col-xs-12
+    sidebar-container
+">
+    
+        <!-- Featured Tags -->
+
+<section>
+    <!-- no hr -->
+    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+            
+            <a href="/tags/支付" title="支付" rel="8">支付</a>
+            
+        
+            
+            <a href="/tags/账务" title="账务" rel="7">账务</a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+</section>
+
+        <hr>
+    
+        <!-- search -->
+<h5>站内搜索</h5>
+<div class="search">
+  <!-- google站内搜索 -->
+  <div>
+    <a href="http://www.google.com/">
+      <img src="http://www.google.com/logos/Logo_40wht.gif" border="0" alt="Google">
+    </a>
+      <form action="http://google.com/search" target="_blank" accept-charset="GB2312">
+      <span class="search">
+        <input type="search" name="q" placeholder="google站内搜索"></span>
+      <span class="button">
+        <input type="submit" value="Google"></span>
+      <input name="sitesearch" type="hidden" value="http://gitkeven.github.io">
+    </form>
+  </div>
+  
+  <!-- 百度站内搜索 -->
+  <div class="baidu">
+    <a href="http://www.baidu.com/">
+      <img src="http://img.baidu.com/img/logo-137px.gif" border="0" alt="baidu">
+    </a>
+      <form action="http://www.baidu.com/baidu" target="_blank">
+        <span class="search">
+          <input type="text" name="word" placeholder="百度站内搜索"></span>
+        <span class="button">
+          <input type="submit" value="Baidu"></span>
+        <input name="tn" type="hidden" value="bds">
+        <input name="cl" type="hidden" value="3">
+        <input name="ct" type="hidden" value="2097152">
+        <input name="si" type="hidden" value="http://gitkeven.github.io">
+      </form>
+  </div>
+</div>  
+
+<style type="text/css">
+.search {
+  margin-bottom:55px;
+}
+.search input {
+      font-size:14px;
+      border:none;
+      background:none;
+      height:33px;
+      line-height:33px;
+  }
+.search span.search {
+      float:left;
+      padding:0;
+      margin:0;
+      width:160px;
+      background:#fafafa;
+      border:0.9px solid #5085e2;
+      border-top-left-radius:7px;
+      border-bottom-left-radius:7px;
+}
+.search span.search input {
+      font-family:KaiTi;
+      width:160px;
+      padding:0 5px;
+      outline:none;
+}
+input::-webkit-input-placeholder {
+    color: #c2c1bc;
+}
+.search span.button {
+    float:left;
+    padding:0;
+    margin:0;
+    border:0.8px solid #5085e2;
+    border-top-right-radius:5px;
+    border-bottom-right-radius:5px;
+}
+.search span.button input {
+    width:50px;
+    padding:0 2px;
+    background:#5085e2;
+    color:#fff;
+}
+.search img{
+  width:75px;
+  height:28px;
+  margin-bottom:5px;
+}  
+.baidu{
+  margin-top:50px;
+  margin-bottom:15px;
+ }
+.search div {
+      clear:both;
+}</style>
+        <hr>
+    
+        <!-- Short About -->
+<section class="visible-md visible-lg">
+    <h5><a href="/about/">ABOUT ME</a></h5>
+    <div class="short-about">
+
+        
+            <img id="avatar_pic" src="/img/about-gentle.jpg">
+        
+
+        
+            <p>👀 支付 | 金融 ┇ Java | 架构</p>
+        
+
+        <!-- SNS Link -->
+        <ul class="list-inline">
+            
+ 
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591">
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://blog.csdn.net/yangkai_hudong">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">C</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">知</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="http://weibo.com/CSDNyangkai">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://github.com/gitkeven">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+           
+        </ul>
+    </div>
+</section>
+        <hr>
+    
+        
+  <h5>最新文章</h5>
+  <div class="widget">
+    <ul>
+      
+        <li>
+          <a href="/2018/12/01/pay/【对账】对账系统设计/">【对账】对账系统设计</a>
+        </li>
+      
+        <li>
+          <a href="/2018/10/05/pay/【账务】账务业务知识/">【账务】账务业务知识</a>
+        </li>
+      
+        <li>
+          <a href="/2018/10/01/pay/【账务】复式记账/">【账务】复式记账</a>
+        </li>
+      
+        <li>
+          <a href="/2018/10/01/pay/【账务】会计基础/">【账务】会计基础</a>
+        </li>
+      
+        <li>
+          <a href="/2018/10/01/pay/【账务】会计科目/">【账务】会计科目</a>
+        </li>
+      
+        <li>
+          <a href="/2018/09/02/pay/【账户】账户体系-账户建模/">【账户】账户体系-账户建模</a>
+        </li>
+      
+    </ul>
+  </div>
+
+        <hr>
+    
+        
+    <h5>ARCHIVES</h5>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">2018年 12月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">2018年 10月</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">2018年 09月</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">2018年 04月</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+
+        <hr>
+    
+        <!-- Categories -->
+
+    <h5>categories</h5>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/支付/">支付</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/架构/">架构</a><span class="category-list-count">1</span></li></ul>
+    </div>
+
+        <hr>
+    
+        <!-- Friends Blog -->
+
+<h5>友链</h5>
+<ul class="list-inline">
+
+    
+        <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+    
+        <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+    
+        <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+    
+        <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+    
+</ul>
+
+        <hr>
+    
+</div>
+
+        
+    </div>
+</div>
+
+
+    <!-- Image to hack wechat -->
+    <!--  -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591">
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://blog.csdn.net/yangkai_hudong">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">C</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">知</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="http://weibo.com/CSDNyangkai">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://github.com/gitkeven">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://gitkeven.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=gitkeven.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://gitkeven.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

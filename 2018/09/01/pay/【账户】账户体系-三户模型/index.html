@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 |　支付金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【账务】账户体系-三户模型 - 杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://gitkeven.github.io/2018/09/01/pay/【账户】账户体系-三户模型/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-pay.jpeg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                            
+                              <a class="tag" href="/tags/#账务" title="账务">账务</a>
+                            
+                              <a class="tag" href="/tags/#账户" title="账户">账户</a>
+                            
+                        </div>
+                        <h1>【账务】账户体系-三户模型</h1>
+                        <h2 class="subheading">大账务系统-账户体系-三户模型</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-09-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="概述">概述</h2>
+<hr>
+<h3 id="背景">背景</h3>
+<ul>
+<li>三户模型最早是在增强型电信运营图（Enhanced Telecom Operations Map，eTOM）中提出，在电信行业中得到广泛使用。</li>
+<li>三户指客户（Customer）、用户（User）和账户(Account)。</li>
+<li>eTOM 引入是电信行业营销模型转向“以客户为中心”的理念而产生的成果。围绕客户建立用户和账户，这三个是相互关联的实体。近年来，金融行业也逐步接受和采用了三户模型。</li>
+</ul>
+<h3 id="写在前面">写在前面</h3>
+<ul>
+<li>所有的交易行为都是以人为基础而发生的，而人在支付机构，银行机构等怎么体现呢？这就需要各种各样的账户来帮客户完成交易。</li>
+<li>本文试从三户模型，账户介绍，银行账户，支付账户，备付金账户等角度来介绍支付业务的账户体系。</li>
+</ul>
+<h2 id="三户模型">三户模型</h2>
+<hr>
+<h3 id="三户模型概念">三户模型概念</h3>
+<p>三户是指：用户、客户、账户</p>
+<blockquote>
+<ul>
+<li>与客户这个概念关联最为紧密的概念就是用户和帐户，这三者之间的关系应该是一个相互关联但又是独立的三个实体，这种关联只是一个归属和映射的关系，而三个实体本身是相互独立的。</li>
+<li>分别是体现完全不同的几个域的信息，客户是体现了社会域的信息，用户体现了业务域的信息，帐户体现的是资金域的信息。</li>
+</ul>
+</blockquote>
+<ul>
+<li><strong>客户</strong>是指自然人或法人。法人通常被称为企业客户，包括企业和个体户类型。客户是反映社会领域的信息。</li>
+<li><strong>用户</strong>是通过注册进入系统并使用系统提供的服务的实体。客户有自然人和法人，则用户对应也有个人用户和法人用户，只有法人客户在系统注册，称为商户。用户体现了业务领域的信息。</li>
+<li><strong>账户</strong>这里特指支付账户， 指用户在支付系统中用于交易的资金所有者权益的凭证。帐户体现的是资金域的信息。<br>
+<strong>客户模型如下</strong><br>
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/account-3-customer.png" alt=""></li>
+</ul>
+<h3 id="三者之间相关关系">三者之间相关关系</h3>
+<p>一般来说，三者之间有一种归属和映射的关系。一个客户可以注册多个用户，一个用户可以拥有多个帐户，也可以换算成一个客户可以有多个帐户。<br>
+<strong>模型关系图</strong><br>
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/account-3-relation1.jpeg" alt="">
+<strong>模型领域关系图</strong><br>
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/account-3-relation2.png" alt="">
+<strong>说明</strong></p>
+<blockquote>
+<ul>
+<li><strong>订购关系</strong>：客户开通了业务系统服务，就产生了一个用户，用户作为业务服务的承载主体。一个客户可以开通多个业务（即开通多个用户账号），但一个用户只属于一个客户，即客户和用户的关系是一对多。</li>
+<li><strong>归属关系</strong>：一个客户可以拥有多个账户，比如：现金、保证金、积分等，但一个账户只能属于一个客户；一般情况下客户和账户没有直接联系，就像图中客户和账户是多对多的关系一样，需要有个用户做中间表，即客户和账户的关系是多对多。</li>
+<li><strong>支付关系</strong>：一个用户可以用不同的账户支付（根据业务使用不同的账户支付），但一个账户一般情况只服务一个用户，甚至是一个用户下的一个业务（专户专用）；即用户和账户的关系是一对多。</li>
+</ul>
+</blockquote>
+<h2 id="三户模型的应用">三户模型的应用</h2>
+<hr>
+<blockquote>
+<p>不论个人客户，还是企业商户，都脱离不了上面的三户模型。</p>
+</blockquote>
+<h3 id="个人客户">个人客户</h3>
+<ul>
+<li>我们在系统中通过实名在系统中建立客户对象,这个业务有一个主键id(如身份证号码),我们都将身份证相同的视为同一个客户,无论是不是同一个系统。</li>
+<li>例如，无论是在中国工商银行还是中国银行，相同的身份证号码实际上都是同一个人。在平台系统中，客户由系统指定给客户的唯一客户ID标识。</li>
+<li>其中有一个关键业务逻辑，因为相同的身份证号码将被标识为同一个客户，当相同的id号进入系统时，系统是如何处理的?当然是客户合并，即：将相同证件的客户合成同一个客户号的过程，我们称为归并，但是合并是有风险的，所以对身份进行鉴权。</li>
+</ul>
+<h3 id="企业客户">企业客户</h3>
+<ul>
+<li>同个人客户一样，企业客户在银行或支付平台开设账户，账户归属于此客户。</li>
+<li>企业客户是一个组织，其账户必然是组织授权组只内有人去操作，但是这个操作人，同个人客户一样，只是系统的使用者，即：用户。</li>
+<li>企业的资金比较大，并且有严格的业务流程，所以在系统使用上，肯定是多个用户操作一个或多个账户。这种关系本身来说，也是一种授权关系，企业授权相应的用户来操作特定的账户，只不过为了管理方便，可以引入角色管理机制来实现。对于支付公司来说，企业客户通常都是发展商户过程中产生的。</li>
+<li>企业客户的识别同个人客户识别也是一样的，通过企业证件来统一识别。相同的企业证件号归并到同一个企业客户下面。建立企业客户的好处是什么？一是因为有些企业本身只开通了企业服务业务，而不开通商户服务，二是，一个企业可以开通多个商户，企业客户是这些多个商户的统计口径。</li>
+</ul>
+<h2 id="生命周期">生命周期</h2>
+<hr>
+<blockquote>
+<p>一般一个完整的生命周期包含：
+客户注册成为用户(可一个或多个) -&gt; 用户拥有账户(可一个或多个) -&gt; 注销账户 -&gt; 注销用户<br>
+其中可能还会存在异常情况，比如冻结用户，客户止付。</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/account-3-cycle1.png" alt="">
+<img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/account-3-cycle2.png" alt=""></p>
+<h3 id="销户">销户</h3>
+<ul>
+<li>如果用户想要销户，收到销户申请后，不能直接销户。客户是通过用户来进行资金账户的管理与操作的，没有用户，资金账户就有可能没法玩了（假设客户只授权自己的一个而且只有一个用户来操作资金账户），特别是一些账户还存在债务。</li>
+<li>所以，此时有个确认过程，要求各业务系统确认此用户下的所有账户是否可以销户，如果没有问题，先销资金账户，当用户下的所有资金账户都销户完毕，再销用户，用户销户完成后，会释放出此用户占用的资源，如注册手机号。</li>
+</ul>
+<h3 id="生命周期-v2">生命周期</h3>
+<ul>
+<li>用户除了生命周期状态外，还有一个管理状态，比如冻结，从现实模型中来说，这个是不应该放在用户层面的而是放在资金账户层面上的，但互联网模式下，一个用户有多个资金账户，为了用户体验，把这些放在了用户层面上了，就如同支付密码放在用户层面上一样。</li>
+<li>除了用户冻结外，还有一个管理状态为客户止付，比如：此客户已经被司法冻结了，则此客户下所有账户都应该是止付的。其实这也是将一些本应是资金账户层面上的控制，放在了客户层面上，还是回到那个用户体验，因为一个客户有多个用户，一个用户有多个资金账户，如果要对同一个客户下所有资金账户进行控制，有点复杂，所以在客户层面上做了控制。</li>
+</ul>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2018/09/02/pay/【账户】账户体系-账户设计/" data-toggle="tooltip" data-placement="top" title="【账户】账户体系-账户设计">&larr; 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/04/01/arch/【设计模式】单例模式/" data-toggle="tooltip" data-placement="top" title="【设计模式】单例模式">下一篇 &rarr;</a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#概述"><span class="toc-nav-text">概述</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#背景"><span class="toc-nav-text">背景</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#写在前面"><span class="toc-nav-text">写在前面</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#三户模型"><span class="toc-nav-text">三户模型</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#三户模型概念"><span class="toc-nav-text">三户模型概念</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#三者之间相关关系"><span class="toc-nav-text">三者之间相关关系</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#三户模型的应用"><span class="toc-nav-text">三户模型的应用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#个人客户"><span class="toc-nav-text">个人客户</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#企业客户"><span class="toc-nav-text">企业客户</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#生命周期"><span class="toc-nav-text">生命周期</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#销户"><span class="toc-nav-text">销户</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#生命周期-v2"><span class="toc-nav-text">生命周期</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                        
+                          <a class="tag" href="/tags/#账务" title="账务">账务</a>
+                        
+                          <a class="tag" href="/tags/#账户" title="账户">账户</a>
+                        
+                    </div>
+                </section>
+                
+            
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;">
+
+
+ <!--友链-->
+
+    <hr>
+    <h5>友链</h5>
+    <ul class="list-inline">
+
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '31092bbdb23c158191a4',
+        clientSecret: '463191ce71c077f5a498222788a4ec1db633a5f8',
+        id: window.location.pathname,
+        repo: 'gitkeven.github.io',
+        owner: 'gitkeven',
+        admin: 'gitkeven',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/gitkeven/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591">
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://blog.csdn.net/yangkai_hudong">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">C</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa  fa-stack-1x fa-inverse">知</i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+     <li>
+         <a target="_blank" href="http://weibo.com/CSDNyangkai">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+ 
+     <li>
+         <a target="_blank" href="https://github.com/gitkeven">
+             <span class="fa-stack fa-lg">
+                 <i class="fa fa-circle fa-stack-2x"></i>
+                 <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+             </span>
+         </a>
+     </li>
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://gitkeven.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=gitkeven.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://gitkeven.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>
