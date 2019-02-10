@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://gitkeven.github.io</loc>
+        <loc>http://ykblog.github.io</loc>
         <changefreq>daily</changefreq>
         <priority>1</priority>
     </url>
     
     <url>
-        <loc>http://gitkeven.github.io/about/</loc>
-        <lastmod>2019-02-07T15:49:42.830Z</lastmod>
+        <loc>http://ykblog.github.io/about/</loc>
+        <lastmod>2019-02-10T04:55:41.453Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>http://gitkeven.github.io/categories/</loc>
+        <loc>http://ykblog.github.io/categories/</loc>
         <lastmod>2019-02-04T13:43:01.840Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>http://gitkeven.github.io/archive/</loc>
+        <loc>http://ykblog.github.io/archive/</loc>
         <lastmod>2019-02-04T13:43:00.424Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>http://gitkeven.github.io/tags/</loc>
+        <loc>http://ykblog.github.io/tags/</loc>
         <lastmod>2019-02-04T13:01:10.912Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>http://gitkeven.github.io/404.html</loc>
+        <loc>http://ykblog.github.io/404.html</loc>
         <lastmod>2019-01-17T07:47:34.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>

@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="zXV5v3GVz-znIgy-TUGQesI9MdP0oLjBmbAltEPS1fM">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 | 支付 | 金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【网络】OSI和TCP/IP概述和区别 - 杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.github.io/posts/network/【网络】OSI和TCP-IP概述和区别/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-network.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                            
+                              <a class="tag" href="/tags/#TCP" title="TCP">TCP</a>
+                            
+                              <a class="tag" href="/tags/#OSI" title="OSI">OSI</a>
+                            
+                        </div>
+                        <h1>【网络】OSI和TCP/IP概述和区别</h1>
+                        <h2 class="subheading">网络-OSI和TCP/IP-OSI七层协议和TCP/IP四层协议概述和区别</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-04-04
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="osi">OSI</h2>
+<hr>
+<p>OSI是七层网络架构<br>
+　　OSI（Open System Interconnection）是一个开放性的通行系统互连参考模型 。<br>
+　　是一个理论模型；实际工业中并没有这么设计的。<br>
+　　上面四层，即7、6、5、4层定义了应用程序的功能；下面3层，即3、2、1层主要面向通过网络的端到端的数据流。<br>
+　　是由ISO (International Standards Organization)在1978（maybe 1979）年为网络通信制定的。</p>
+<h3 id="七层功能和协议">七层功能和协议</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">分层</th>
+<th style="text-align:left">功能</th>
+<th style="text-align:left">对应的协议或格式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">应用层</td>
+<td style="text-align:left">文件传输，电子邮件，文件服务，虚拟终端</td>
+<td style="text-align:left">FTP，WWW，Telnet，NFS，SMTP，Gateway，SNMP，TFTP，HTTP，DNS</td>
+</tr>
+<tr>
+<td style="text-align:left">表示层</td>
+<td style="text-align:left">数据格式化，代码转换，数据加密</td>
+<td style="text-align:left">TIFF，GIF，JPEG，ASCII，encryption，MPEG，MIDI，HTML</td>
+</tr>
+<tr>
+<td style="text-align:left">会话层</td>
+<td style="text-align:left">解除或建立与别的接点的联系</td>
+<td style="text-align:left">RPC，SQL，NFS，NetBIOS，names，ASP，SCP</td>
+</tr>
+<tr>
+<td style="text-align:left">传输层</td>
+<td style="text-align:left">提供端对端的接口</td>
+<td style="text-align:left">TCP，UDP，SPX</td>
+</tr>
+<tr>
+<td style="text-align:left">网络层</td>
+<td style="text-align:left">为数据包选择路由</td>
+<td style="text-align:left">IP，ICMP，RIP，OSPF，BGP，IPX</td>
+</tr>
+<tr>
+<td style="text-align:left">数据链路层</td>
+<td style="text-align:left">传输有地址的帧以及错误检测功能</td>
+<td style="text-align:left">SLIP，CSLIP，PPP，ARP，RARP，MTU，HDLC，IEEE 802.3/802.2，FDDI，ATM</td>
+</tr>
+<tr>
+<td style="text-align:left">物理层</td>
+<td style="text-align:left">以二进制数据形式在物理媒体上传输数据</td>
+<td style="text-align:left">EIA/TIA-232，V.35，RJ45，Ethernet，FDDI，NRZI，NRZ，B8ZS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="各层协议讲解">各层协议讲解</h3>
+<p>从下到上，物理层最低的，应用层最高的。</p>
+<ul>
+<li><strong>应用层（application）</strong><br>
+主要功能 ：用户接口、应用程序<br>
+典型设备：网关<br>
+典型协议、标准和应用：TELNET, FTP, HTTP</li>
+<li><strong>表示层（presentation）</strong><br>
+主要功能 ：数据的表示、压缩和加密<br>
+典型设备：网关<br>
+典型协议、标准和应用：ASCLL、PICT、TIFF、JPEG、 MIDI、MPEG</li>
+<li><strong>会话层（session）</strong><br>
+主要功能 ：会话的建立和结束<br>
+典型设备：网关<br>
+典型协议、标准和应用：RPC、SQL、NFS 、X WINDOWS、ASP</li>
+<li><strong>传输层（transport ）</strong><br>
+主要功能 ：端到端控制<br>
+典型设备：网关<br>
+典型协议、标准和应用：TCP、UDP、SPX</li>
+<li><strong>网络层（network）</strong><br>
+主要功能 ：路由，寻址<br>
+典型设备：路由器<br>
+典型协议、标准和应用：IP、IPX、APPLETALK、ICMP</li>
+<li><strong>数据链路层（data link ）</strong><br>
+主要功能 ：保证误差错的数据链路 　　
+典型设备：交换机、网桥、网卡　　
+典型协议、标准和应用：802.2、802.3ATM、HDLC、FRAME RELAY</li>
+<li><strong>物理层（physical）</strong><br>
+主要功能 ：传输比特流<br>
+典型设备：集线器、中继器<br>
+典型协议、标准和应用：V.35、EIA/TIA-232</li>
+</ul>
+<h2 id="tcp-ip">TCP/IP</h2>
+<p>TCP/IP是四层网络模型<br>
+　　TCP/IP实际上是一组协议，它包括上百个各种功能的协议，如：远程登录、文件传输和电子邮件等，而TCP协议和IP协议是保证数据完整传输的两个基本的重要协议。<br>
+　　通常说TCP/IP是Internet协议族，而不单单是TCP和IP；是70年代中期美国国防部为其ARPANET广域网开发的网络体系结构和协议标准，以它为基础组建的INTERNET是目前国际上规模最大的计算机网络，正因为INTERNET的广泛使用，使得TCP/IP成了事实上的标准。</p>
+<h3 id="四层功能和协议">四层功能和协议</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">分层</th>
+<th style="text-align:left">对应的协议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">主机到网络层</td>
+<td style="text-align:left">未真正定义</td>
+</tr>
+<tr>
+<td style="text-align:left">网络互连层</td>
+<td style="text-align:left">IP，ICMP，IGMP,IPX</td>
+</tr>
+<tr>
+<td style="text-align:left">传输层</td>
+<td style="text-align:left">TCP，UDP，UGP，SCTP</td>
+</tr>
+<tr>
+<td style="text-align:left">应用层</td>
+<td style="text-align:left">Telnet，FTP，SMTP，SNMP，HTTP,DNS,WWW</td>
+</tr>
+</tbody>
+</table>
+<h3 id="各层协议详解">各层协议详解</h3>
+<ol>
+<li><strong>主机到网络层</strong><br>
+　　实际上TCP/IP参考模型没有真正描述这一层的实现。<br>
+　　只是要求能够提供给其上层-网络互连层一个访问接口，以便在其上传递IP分组。由于这一层次未被定义，所以其具体的实现方法将随着网络类型的不同而不同。</li>
+<li><strong>网络互连层</strong><br>
+　　网络互连层是整个TCP/IP协议栈的核心。<br>
+　　它的功能是把分组发往目标网络或主机。同时，为了尽快地发送分组，可能需要沿不同的路径同时进行分组传递。因此，分组到达的顺序和发送的顺序可能不同，这就需要上层必须对分组进行排序。<br>
+　　网络互连层定义了分组格式和协议，即IP协议（Internet Protocol）。网络互连层除了需要完成路由的功能外，也可以完成将不同类型的网络（异构网）互连的任务。除此之外，网络互连层还需要完成拥塞控制的功能。</li>
+<li><strong>传输层</strong><br>
+　　在TCP/IP模型中，传输层的功能是使源端主机和目标端主机上的对等实体可以进行会话。<br>
+　　在传输层定义了两种服务质量不同的协议。即：传输控制协议TCP（transmission control protocol）和用户数据报协议UDP（user datagram protocol）。<br>
+　　TCP协议是一个面向连接的、可靠的协议。它将一台主机发出的字节流无差错地发往互联网上的其他主机。在发送端，它负责把上层传送下来的字节流分成报文段并传递给下层。在接收端，它负责把收到的报文进行重组后递交给上层。TCP协议还要处理端到端的流量控制，以避免缓慢接收的接收方没有足够的缓冲区接收发送方发送的大量数据。<br>
+　　UDP协议是一个不可靠的、无连接协议，主要适用于不需要对报文进行排序和流量控制的场合。</li>
+<li><strong>应用层</strong><br>
+　　TCP/IP模型将OSI参考模型中的会话层和表示层的功能合并到应用层实现。      　
+　　应用层面向不同的网络应用引入了不同的应用层协议。其中，有基于TCP协议的，如文件传输协议（File Transfer Protocol，FTP）、虚拟终端协议（TELNET）、超文本链接协议（Hyper Text Transfer Protocol，HTTP），也有基于UDP协议的。</li>
+</ol>
+<h3 id="应用层常用协议">应用层常用协议</h3>
+<ul>
+<li><strong>Telnet</strong>：提供远程登录（终端仿真）服务，好象比较古老的BBS就是用的这个登陆。</li>
+<li><strong>FTP</strong> ：提供应用级的文件传输服务，说的简单明了点就是远程文件访问等等服务。</li>
+<li><strong>SMTP</strong>：不用说拉，天天用到的电子邮件协议。</li>
+<li><strong>TFTP</strong>：提供小而简单的文件传输服务，实际上从某个角度上来说是对FTP的一种替换（在文件特别小并且仅有传输需求的时候）。</li>
+<li><strong>SNTP</strong>：简单网络管理协议。看名字就不用说什么含义了吧。</li>
+<li><strong>DNS</strong>：域名解析服务，也就是如何将域名映射城IP地址的协议。</li>
+<li><strong>HTTP</strong>：这是超文本传输协议，网上的图片，动画，音频，等等，都是这个协议在起作用。</li>
+</ul>
+<h2 id="osi和tcp-ip联系和区别">OSI和TCP/IP联系和区别</h2>
+<hr>
+<h3 id="osi和tcp-ip对应关系">OSI和TCP/IP对应关系</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/tcp-osi-diff.png" alt="">
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/tcp-osi.png" alt=""></p>
+<h3 id="osi和tcp-ip区别">OSI和TCP/IP区别</h3>
+<h4 id="相同点">相同点</h4>
+<ul>
+<li>ISO/OSI参考模型和TCP/IP参考模型都采用了层次结构的概念；</li>
+<li>都能够提供面向连接(TCP协议)和无连接(UDP协议)两种通信服务机制。</li>
+</ul>
+<h4 id="不同点">不同点</h4>
+<ul>
+<li>OSI是七层模型结构，TCP/IP是四层模型结构；</li>
+<li>对可靠性要求不同，TCP/IP参考模型的要求更高；</li>
+<li>ISO/OSI参考模型是在协议开发之前设计的，具有通用性；TCP/IP参考模型则是在协议集已有的情况下建立的，不适用非TCP/IP网络；</li>
+<li>实际市场应用不同， ISO/OSI参考模型只是理论上的模型，并没有成熟的产品支持；而TCP/IP参考模型已经成为“实际上的国际标准”。</li>
+</ul>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/Java/【JUC】ThreadLocal剖析/" data-toggle="tooltip" data-placement="top" title="【JUC】ThreadLocal剖析"><i class="fa fa-hand-o-left"></i> 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/network/【网络】HTTP原理与概述/" data-toggle="tooltip" data-placement="top" title="【网络】HTTP原理与概述">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#osi"><span class="toc-nav-text">OSI</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#七层功能和协议"><span class="toc-nav-text">七层功能和协议</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#各层协议讲解"><span class="toc-nav-text">各层协议讲解</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#tcp-ip"><span class="toc-nav-text">TCP/IP</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#四层功能和协议"><span class="toc-nav-text">四层功能和协议</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#各层协议详解"><span class="toc-nav-text">各层协议详解</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#应用层常用协议"><span class="toc-nav-text">应用层常用协议</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#osi和tcp-ip联系和区别"><span class="toc-nav-text">OSI和TCP/IP联系和区别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#osi和tcp-ip对应关系"><span class="toc-nav-text">OSI和TCP/IP对应关系</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#osi和tcp-ip区别"><span class="toc-nav-text">OSI和TCP/IP区别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#相同点"><span class="toc-nav-text">相同点</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#不同点"><span class="toc-nav-text">不同点</span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                        
+                          <a class="tag" href="/tags/#TCP" title="TCP">TCP</a>
+                        
+                          <a class="tag" href="/tags/#OSI" title="OSI">OSI</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-users"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '31092bbdb23c158191a4',
+        clientSecret: '463191ce71c077f5a498222788a4ec1db633a5f8',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '链接：https://ykblog.github.io<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '链接：https://ykblog.github.io\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="/about" style="color:#26ab28 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="zXV5v3GVz-znIgy-TUGQesI9MdP0oLjBmbAltEPS1fM">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 | 支付 | 金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【网络】HTTP原理与概述 - 杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.github.io/posts/network/【网络】HTTP原理与概述/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-network.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                            
+                              <a class="tag" href="/tags/#原理" title="原理">原理</a>
+                            
+                              <a class="tag" href="/tags/#HTTP" title="HTTP">HTTP</a>
+                            
+                        </div>
+                        <h1>【网络】HTTP原理与概述</h1>
+                        <h2 class="subheading">网络-HTTP-HTTP概述、原理和跨站攻击</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-04-04
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="http协议">HTTP协议</h2>
+<hr>
+<h3 id="http简介">HTTP简介</h3>
+<p>HTTP协议（HyperText Transfer Protocol，超文本传输协议）<br>
+　　用于从WWW服务器传输超文本到本地浏览器的传送协议。它可以使浏览器更加高效，使网络传输减少。它不仅保证计算机正确快速地传输超文本文档，还确定传输文档中的哪一部分，以及哪部分内容首先显示(如文本先于图形)等。<br>
+　　HTTP 协议是以 ASCII 码传输，建立在 TCP/IP 协议之上的应用层规范。规范把 HTTP 请求分为三个部分：状态行、请求头、消息主体。它不涉及数据包（packet）传输，主要规定了客户端和服务器之间的通信格式，默认使用80端口。在TCP/IP四层协议的应用层。关于TCP/IP四层结构。</p>
+<h3 id="http-发展史">HTTP 发展史</h3>
+<h4 id="http-0-9">HTTP/0.9</h4>
+<p>最早版本是1991年发布的0.9版。<br>
+　　该版本极其简单，只有一个命令GET。GET /index.html<br>
+　　协议规定，服务器只能回应HTML格式的字符串，不能回应别的格式。服务器发送完毕，就关闭TCP连接。</p>
+<h4 id="http-1-0">HTTP/1.0</h4>
+<p>1996年5月，HTTP/1.0 版本发布，内容大大增加。<br>
+　　首先，任何格式的内容都可以发送。这使得互联网不仅可以传输文字，还能传输图像、视频、二进制文件。这为互联网的大发展奠定了基础。<br>
+　　其次，除了GET命令，还引入了POST命令和HEAD命令，丰富了浏览器与服务器的互动手段。<br>
+　　再次，HTTP请求和回应的格式也变了。除了数据部分，每次通信都必须包括头信息（HTTP header），用来描述一些元数据。其他的新增功能还包括状态码（status code）、多字符集支持、多部分发送（multi-part type）、权限（authorization）、缓存（cache）、内容编码（content encoding）等。</p>
+<ul>
+<li><strong>Content-Type 字段</strong><br>
+　　关于字符的编码，1.0版规定，头信息必须是 ASCII 码，后面的数据可以是任何格式。因此，服务器回应的时候，必须告诉客户端，数据是什么格式，这就是Content-Type字段的作用。下面是一些常见的Content-Type字段的值。</li>
+</ul>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">text</span>/plain</span><br><span class="line"><span class="built_in">text</span>/html</span><br><span class="line"><span class="built_in">text</span>/css</span><br><span class="line">image/jpeg</span><br><span class="line">image/png</span><br><span class="line">image/svg+xml</span><br><span class="line">audio/mp4</span><br><span class="line">video/mp4</span><br><span class="line"><span class="built_in">application</span>/javascript</span><br><span class="line"><span class="built_in">application</span>/pdf</span><br><span class="line"><span class="built_in">application</span>/zip</span><br><span class="line"><span class="built_in">application</span>/atom+xml</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Content-Encoding 字段</strong><br>
+　　由于发送的数据可以是任何格式，因此可以把数据压缩后再发送。Content-Encoding字段说明数据的压缩方法。</li>
+</ul>
+<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Encoding</span>: gzip</span><br><span class="line"><span class="attribute">Content-Encoding</span>: compress</span><br><span class="line"><span class="attribute">Content-Encoding</span>: deflate</span><br></pre></td></tr></table></figure>
+<p>客户端在请求时，用Accept-Encoding字段说明自己可以接受哪些压缩方法。Accept-Encoding: gzip, deflate</p>
+<p><strong>缺点</strong><br>
+　　每个TCP连接只能发送一个请求。发送数据完毕，连接就关闭，如果还要请求其他资源，就必须再新建一个连接。TCP连接的新建成本很高，因为需要客户端和服务器三次握手，并且开始时发送速率较慢（slow start）。所以，HTTP 1.0版本的性能比较差。随着网页加载的外部资源越来越多，这个问题就愈发突出了。<br>
+　　为了解决这个问题，有些浏览器在请求时，用了一个非标准的Connection字段。Connection: keep-alive<br>
+　　这个字段要求服务器不要关闭TCP连接，以便其他请求复用。服务器同样回应这个字段。一个可以复用的TCP连接就建立了，直到客户端或服务器主动关闭连接。但是，这不是标准字段，不同实现的行为可能不一致，因此不是根本的解决办法。</p>
+<h4 id="http-1-1">HTTP/1.1</h4>
+<p>1997年1月，HTTP/1.1 版本发布，只比 1.0 版本晚了半年。<br>
+　　它进一步完善了 HTTP 协议，一直用到了20年后的今天，直到现在还是最流行的版本。</p>
+<ul>
+<li><strong>引入了持久连接（persistent connection）</strong><br>
+　　即TCP连接默认不关闭，可以被多个请求复用，不用人为的声明Connection: keep-alive。客户端和服务器发现对方一段时间没有活动，就可以主动关闭连接。不过，规范的做法是，客户端在最后一个请求时，发送Connection: close，明确要求服务器关闭TCP连接。目前，对于同一个域名，大多数浏览器允许同时建立6个持久连接。</li>
+<li><strong>引入了管道机制（pipelining）</strong><br>
+　　即在同一个TCP连接里面，客户端可以同时发送多个请求。这样就进一步改进了HTTP协议的效率。<br>
+　　举例来说，客户端需要请求两个资源。以前的做法是，在同一个TCP连接里面，先发送A请求，然后等待服务器做出回应，收到后再发出B请求。管道机制则是允许浏览器同时发出A请求和B请求，但是服务器还是按照顺序，先回应A请求，完成后再回应B请求。</li>
+<li><strong>引入了分块传输编码</strong><br>
+　　一个TCP连接现在可以传送多个回应，势必就要有一种机制，区分数据包是属于哪一个回应的。这就是Content-length字段的作用，声明本次回应的数据长度。Content-Length: 3495。上面代码告诉浏览器，本次回应的长度是3495个字节，后面的字节就属于下一个回应了。在1.0版中，Content-Length字段不是必需的，因为浏览器发现服务器关闭了TCP连接，就表明收到的数据包已经全了。<br>
+　　使用Content-Length字段的前提条件是，服务器发送回应之前，必须知道回应的数据长度。对于一些很耗时的动态操作来说，这意味着，服务器要等到所有操作完成，才能发送数据，显然这样的效率不高。更好的处理方法是，产生一块数据，就发送一块，采用&quot;流模式&quot;（stream）取代&quot;缓存模式&quot;（buffer）。<br>
+　　因此，1.1版规定可以不使用Content-Length字段，而使用&quot;分块传输编码&quot;（chunked transfer encoding）。只要请求或回应的头信息有Transfer-Encoding字段，就表明回应将由数量未定的数据块组成。Transfer-Encoding: chunked。每个非空的数据块之前，会有一个16进制的数值，表示这个块的长度。最后是一个大小为0的块，就表示本次回应的数据发送完了。</li>
+</ul>
+<p><strong>缺点</strong><br>
+　　虽然1.1版允许复用TCP连接，但是同一个TCP连接里面，所有的数据通信是按次序进行的。服务器只有处理完一个回应，才会进行下一个回应。要是前面的回应特别慢，后面就会有许多请求排队等着。这称为&quot;队头堵塞&quot;（Head-of-line blocking）。<br>
+　　为了避免这个问题，只有两种方法：一是减少请求数，二是同时多开持久连接。这导致了很多的网页优化技巧，比如合并脚本和样式表、将图片嵌入CSS代码、域名分片（domain sharding）等等。如果HTTP协议设计得更好一些，这些额外的工作是可以避免的。</p>
+<h4 id="http-2">HTTP/2</h4>
+<p>2015年，HTTP/2 发布。<br>
+　　它不叫 HTTP/2.0，是因为标准委员会不打算再发布子版本了，下一个新版本将是 HTTP/3。</p>
+<ul>
+<li><strong>二进制协议</strong><br>
+　　HTTP/1.1 版的头信息肯定是文本（ASCII编码），数据体可以是文本，也可以是二进制。HTTP/2 则是一个彻底的二进制协议，头信息和数据体都是二进制，并且统称为&quot;帧&quot;（frame）：头信息帧和数据帧。<br>
+　　二进制协议的一个好处是，可以定义额外的帧。HTTP/2 定义了近十种帧，为将来的高级应用打好了基础。如果使用文本实现这种功能，解析数据将会变得非常麻烦，二进制解析则方便得多。</li>
+<li><strong>多工</strong><br>
+　　HTTP/2 复用TCP连接，在一个连接里，客户端和浏览器都可以同时发送多个请求或回应，而且不用按照顺序一一对应，这样就避免了&quot;队头堵塞&quot;。双向的、实时的通信，就叫做多工（Multiplexing）<br>
+　　举例来说，在一个TCP连接里面，服务器同时收到了A请求和B请求，于是先回应A请求，结果发现处理过程非常耗时，于是就发送A请求已经处理好的部分， 接着回应B请求，完成后，再发送A请求剩下的部分。</li>
+<li><strong>数据流</strong><br>
+　　因为 HTTP/2 的数据包是不按顺序发送的，同一个连接里面连续的数据包，可能属于不同的回应。因此，必须要对数据包做标记，指出它属于哪个回应。
+HTTP/2 将每个请求或回应的所有数据包，称为一个数据流（stream）。每个数据流都有一个独一无二的编号。数据包发送的时候，都必须标记数据流ID，用来区分它属于哪个数据流。另外还规定，客户端发出的数据流，ID一律为奇数，服务器发出的，ID为偶数。<br>
+　　数据流发送到一半的时候，客户端和服务器都可以发送信号（RST_STREAM帧），取消这个数据流。1.1版取消数据流的唯一方法，就是关闭TCP连接。这就是说，HTTP/2 可以取消某一次请求，同时保证TCP连接还打开着，可以被其他请求使用。客户端还可以指定数据流的优先级。优先级越高，服务器就会越早回应。</li>
+<li><strong>头信息压缩</strong><br>
+　　HTTP 协议不带有状态，每次请求都必须附上所有信息。所以，请求的很多字段都是重复的，比如Cookie和User Agent，一模一样的内容，每次请求都必须附带，这会浪费很多带宽，也影响速度。<br>
+　　一方面，头信息使用gzip或compress压缩后再发送；另一方面，客户端和服务器同时维护一张头信息表，所有字段都会存入这个表，生成一个索引号，以后就不发送同样字段了，只发送索引号，这样就提高速度了。</li>
+<li><strong>服务器推送</strong><br>
+　　HTTP/2 允许服务器未经请求，主动向客户端发送资源，这叫做服务器推送（server push）。<br>
+　　常见场景是客户端请求一个网页，这个网页里面包含很多静态资源。正常情况下，客户端必须收到网页后，解析HTML源码，发现有静态资源，再发出静态资源请求。其实，服务器可以预期到客户端请求网页后，很可能会再请求静态资源，所以就主动把这些静态资源随着网页一起发给客户端了。</li>
+</ul>
+<p><strong>主要特点</strong></p>
+<ul>
+<li>简单快速<br>
+　　客户向服务器请求服务时，只需传送请求方法和路径。请求方法常用的有GET、HEAD、POST。每种方法规定了客户与服务器联系的类型不同。由于HTTP协议简单，使得HTTP服务器的程序规模小，因而通信速度很快。</li>
+<li>灵活<br>
+　　HTTP允许传输任意类型的数据对象。正在传输的类型由Content-Type加以标记。</li>
+<li>无连接<br>
+　　无连接的含义是限制每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。采用这种方式可以节省传输时间。</li>
+<li>无状态<br>
+　　HTTP协议是无状态协议。无状态是指协议对于事务处理没有记忆能力。缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时它的应答就较快。</li>
+<li>支持B/S及C/S模式</li>
+</ul>
+<h2 id="http-模型和工作过程">HTTP 模型和工作过程</h2>
+<hr>
+<h3 id="http-模型">HTTP 模型</h3>
+<p>HTTP由请求和响应构成，是一个标准的客户端服务器模型（B/S）。<br>
+HTTP协议永远都是客户端发起请求，服务器回送响应。如下图：
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/http-model.png" alt="">
+　　HTTP是一个无状态的协议。<br>
+　　无状态是指客户机（Web浏览器）和服务器之间不需要建立持久的连接，这意味着当一个客户端向服务器端发出请求，然后服务器返回响应(response)，连接就被关闭了，在服务器端不保留连接的有关信息.HTTP遵循请求(Request)/应答(Response)模型。客户机（浏览器）向服务器发送请求，服务器处理请求并返回适当的应答。所有HTTP连接都被构造成一套请求和应答。</p>
+<h3 id="http工作过程">HTTP工作过程</h3>
+<p>一次HTTP操作称为一个事务，其工作整个过程如下：</p>
+<ol>
+<li>地址解析<br>
+　　例如：用客户端浏览器请求这个页面：<a href="http://localhost.com:8080/index.html" target="_blank" rel="noopener">http://localhost.com:8080/index.html</a><br>
+　　从中分解出协议名、主机名、端口、对象路径等部分，对于我们的这个地址， 在这一步，需要域名系统DNS解析域名’<a href="http://localhost.com" target="_blank" rel="noopener">localhost.com</a>’,得主机的IP地 解析得到的结果如下：<br>
+协议名：http<br>
+主机名：<a href="http://localhost.com" target="_blank" rel="noopener">localhost.com</a><br>
+端口：8080<br>
+对象路径：/index.html</li>
+<li>封装数据报	<br>
+<strong>封装HTTP请求数据包</strong><br>
+　　把以上部分结合本机自己的信息，封装成一个HTTP请求数据包封装成TCP包。<br>
+<strong>建立TCP连接（TCP的三次握手）</strong><br>
+　　在HTTP工作开始之前，客户机（Web浏览器）首先要通过网络与服务器建立连接，该连接是通过TCP来完成的，该协议与IP协议共同构建Internet，即著名的TCP/IP协议族，因此Internet又被称作是TCP/IP网络。HTTP是比TCP更高层次的应用层协议，根据规则，只有低层协议建立之后才能，才能进行更层协议的连接，因此，首先要建立TCP连接，一般TCP连接的端口号是80，这里是8080端口。</li>
+<li>客户机发送请求命令<br>
+　　建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URL）、协议版本号，后边是MIME信息包括请求修饰符、客户机信息和可内容。</li>
+<li>服务器响应<br>
+　　服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是MIME信息包括服务器信息、实体信息和可能的内容。<br>
+　　实体消息是服务器向浏览器发送头信息后，它会发送一个空白行来表示头信息的发送到此为结束，接着，它就以Content-Type应答头信息所描述的格式发送用户所请求的实际数据。</li>
+<li>服务器关闭TCP连接<br>
+　　一般情况下，一旦Web服务器向浏览器发送了请求数据，它就要关闭TCP连接，然后如果浏览器或者服务器在其头信息加入了这行代码
+Connection:keep-alive<br>
+　　TCP连接在发送后将仍然保持打开状态，于是，浏览器可以继续通过相同的连接发送请求。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。</li>
+</ol>
+<p><strong>http协议栈中各层数据流</strong><br>
+　　客户端会将请求封装成http数据包–&gt;封装成tcp数据包–&gt;封装成ip数据包—&gt;封装成数据帧—&gt;硬件将帧数据转换成bit流（二进制数据）–&gt;最后通过物理硬件（网卡芯片）发送到指定地点。<br>
+　　服务器硬件首先收到bit流, 然后转换成ip数据包。于是通过ip协议解析ip数据包，然后又发现里面是tcp数据包，就通过tcp协议解析Tcp数据包，接着发现是http数据包通过http协议再解析http数据包得到数据。<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/http-protocol.png" alt=""></p>
+<h3 id="https-工作原理">HTTPS 工作原理</h3>
+<p><strong>HTTPS</strong>（全称：Hypertext Transfer Protocol over Secure Socket Layer）<br>
+　　是以安全为目标的HTTP通道，简单讲是HTTP的安全版。<br>
+　　即HTTP下加入SSL层，HTTPS的安全基础是SSL。其所用的端口号是443。<br>
+　　<strong>SSL</strong>：安全套接层，是netscape公司设计的主要用于web的安全传输协议。这种协议在WEB上获得了广泛的应用。通过证书认证来确保客户端和网站服务器之间的通信数据是加密安全的。<br>
+<strong>有两种基本的加解密算法类型</strong>：</p>
+<ol>
+<li>对称加密（symmetrcic encryption）<br>
+　　密钥只有一个，加密解密为同一个密码，且加解密速度快，典型的对称加密算法有DES、AES，RC5，3DES等；
+　　对称加密主要问题是共享秘钥，除你的计算机（客户端）知道另外一台计算机（服务器）的私钥秘钥，否则无法对通信流进行加密解密。解决这个问题的方案非对称秘钥。</li>
+<li>非对称加密<br>
+　　使用两个秘钥：公共秘钥和私有秘钥。私有秘钥由一方密码保存（一般是服务器保存），另一方任何人都可以获得公共秘钥。<br>
+　　这种密钥成对出现（且根据公钥无法推知私钥，根据私钥也无法推知公钥），加密解密使用不同密钥（公钥加密需要私钥解密，私钥加密需要公钥解密），相对对称加密速度较慢，典型的非对称加密算法有RSA、DSA等。<br>
+下面看一下https的通信过程：
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/https.png" alt=""></li>
+</ol>
+<p><strong>过程大致如下</strong></p>
+<ul>
+<li>SSL客户端通过TCP和服务器建立连接之后（443端口），并且在一般的tcp连接协商（握手）过程中请求证书。<br>
+　　即客户端发出一个消息给服务器，这个消息里面包含了自己可实现的算法列表和其它一些需要的消息，SSL的服务器端会回应一个数据包，这里面确定了这次通信所需要的算法，然后服务器向客户端返回证书。（证书里面包含了服务器信息：域名。申请证书的公司，公共秘钥）。</li>
+<li>Client在收到服务器返回的证书后，判断签发这个证书的公共签发机构，并使用这个机构的公共秘钥确认签名是否有效，客户端还会确保证书中列出的域名就是它正在连接的域名。</li>
+<li>如果确认证书有效，那么生成对称秘钥并使用服务器的公共秘钥进行加密。然后发送给服务器，服务器使用它的私钥对它进行解密，这样两台计算机可以开始进行对称加密进行通信。</li>
+</ul>
+<p><strong>https通信的优点</strong><br>
+通信安全，具体如下：</p>
+<ol>
+<li>客户端产生的密钥只有客户端和服务器端能得到；</li>
+<li>加密的数据只有客户端和服务器端才能得到明文；</li>
+</ol>
+<h2 id="其他">其他</h2>
+<hr>
+<h3 id="url长度限制">URL长度限制</h3>
+<p>Http协议并没有明确规定<br>
+　　在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。<br>
+　　虽然Http协议规定了，但是Web服务器和浏览器对URI都有自己的长度限制。服务器的限制比如：Nginx和Tomcat对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large_client_header_buffers，tomcat的请求配置参数为maxHttpHeaderSize,都是可以自己去进行设置。</p>
+<h3 id="get和post的区别">get和post的区别</h3>
+<ul>
+<li>GET不安全（参数会暴露）<br>
+　　GET提交的数据会放在URL之后，以?分割URL和传输数据，参数之间以&amp;相连；如果参数是用户名和密码，直接就暴露了，安全性很低。 POST方法是把提交的数据放在HTTP包的Body中。</li>
+<li>GET提交的数据大小有限制<br>
+　　因为浏览器对URL的长度有限制（如IE最多支持2048个字符）；而POST方法提交的数据没有限制。</li>
+</ul>
+<h2 id="跨站攻击">跨站攻击</h2>
+<hr>
+<h3 id="csrf">CSRF</h3>
+<p>CSRF（Cross-site request forgery，跨站请求伪造） 顾名思义，是伪造请求，冒充用户在站内的正常操作。<br>
+　　例如，一论坛网站的发贴是通过 GET 请求访问，点击发贴之后 JS 把发贴内容拼接成目标 URL 并访问： <a href="http://example.com/bbs/create_post.php?title=%E6%A0%87%E9%A2%98&amp;content=%E5%86%85%E5%AE%B9" target="_blank" rel="noopener">http://example.com/bbs/create_post.php?title=标题&amp;content=内容</a><br>
+　　那么，我们只需要在论坛中发一帖，包含一链接：<a href="http://example.com/bbs/create_post.php?title=%E6%88%91%E6%98%AF%E8%84%91%E6%AE%8B&amp;content=%E5%93%88%E5%93%88" target="_blank" rel="noopener">http://example.com/bbs/create_post.php?title=我是脑残&amp;content=哈哈</a><br>
+　　只要有用户点击了这个链接，那么他们的帐户就会在不知情的情况下发布了这一帖子。可能这只是个恶作剧，但是既然发贴的请求可以伪造，那么删帖、转帐、改密码、发邮件全都可以伪造。<br>
+如何防范 CSRF 攻击？可以注意以下几点：</p>
+<ul>
+<li><strong>POST</strong><br>
+　　关键操作只接受POST请求</li>
+<li><strong>验证码</strong><br>
+　　CSRF攻击的过程，往往是在用户不知情的情况下构造网络请求。所以如果使用验证码，那么每次操作都需要用户进行互动，从而简单有效的防御了CSRF攻击。<br>
+　　但是如果你在一个网站作出任何举动都要输入验证码会严重影响用户体验，所以验证码一般只出现在特殊操作里面，或者在注册时候使用。</li>
+<li><strong>检测Referer</strong><br>
+　　常见的互联网页面与页面之间是存在联系的，比如你在www.baidu.com应该是找不到通往www.google.com的链接的，再比如你在论坛留言，那么不管你留言后重定向到哪里去了，之前的那个网址一定会包含留言的输入框，这个之前的网址就会保留在新页面头文件的 Referer 中。<br>
+　　通过检查Referer的值，我们就可以判断这个请求是合法的还是非法的，但是问题出在服务器不是任何时候都能接受到Referer的值，所以 Referer Check 一般用于监控 CSRF 攻击的发生，而不用来抵御攻击。</li>
+<li><strong>Token</strong><br>
+　　目前主流的做法是使用 Token 抵御 CSRF 攻击。CSRF攻击要成功的条件在于攻击者能够预测所有的参数从而构造出合法的请求。所以根据不可预测性原则，我们可以对参数进行加密从而防止CSRF攻击。另一个更通用的做法是保持原有参数不变，另外添加一个参数Token，其值是随机的。这样攻击者因为不知道Token而无法构造出合法的请求进行攻击。</li>
+</ul>
+<blockquote>
+<p><strong>Token使用原则</strong></p>
+<ul>
+<li>Token要足够随机—-只有这样才算不可预测</li>
+<li>Token是一次性的，即每次请求成功后要更新Token—-这样可以增加攻击难度，增加预测难度</li>
+<li>Token要注意保密性—-敏感操作使用 post，防止 Token 出现在 URL 中</li>
+</ul>
+</blockquote>
+<p><strong>注意</strong>：过滤用户输入的内容不能阻挡 csrf，我们需要做的是过滤请求的来源。</p>
+<h3 id="xss">XSS</h3>
+<p>XSS（ Cross Site Scripting，跨站脚本攻击），是注入攻击的一种。<br>
+　　其特点是不对服务器端造成任何伤害，而是通过一些正常的站内交互途径，例如发布评论，提交含有 JavaScript 的内容文本。这时服务器端如果没有过滤或转义掉这些脚本，作为内容发布到了页面上，其他用户访问这个页面的时候就会运行这些脚本。<br>
+　　运行预期之外的脚本带来的后果有很多中，可能只是简单的恶作剧——一个关不掉的窗口：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    alert(<span class="string">"你关不掉我~"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以是盗号或者其他未授权的操作。<br>
+　　XSS 是实现 CSRF 的诸多途径中的一条，但绝对不是唯一的一条。一般习惯上把通过 XSS 来实现的 CSRF 称为 XSRF。<br>
+<strong>如何防御 XSS 攻击？</strong><br>
+就是过滤用户的输入<br>
+　　如果不需要用户输入 HTML，可以直接对用户的输入进行 HTML escape 。它现在会像普通文本一样显示出来，变得无毒无害，不能执行了。<br>
+　　当我们需要用户输入 HTML 的时候，需要对用户输入的内容做更加小心细致的处理。仅仅粗暴地去掉 script 标签是没有用的，任何一个合法 HTML 标签都可以添加 onclick 一类的事件属性来执行 JavaScript。更好的方法可能是，将用户的输入使用 HTML 解析库进行解析，获取其中的数据。然后根据用户原有的标签属性，重新构建 HTML 元素树。构建的过程中，所有的标签、属性都只从白名单中拿取。</p>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/network/【网络】OSI和TCP-IP概述和区别/" data-toggle="tooltip" data-placement="top" title="【网络】OSI和TCP/IP概述和区别"><i class="fa fa-hand-o-left"></i> 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/network/【网络】TCP-IP概述和原理/" data-toggle="tooltip" data-placement="top" title="【网络】TCP/IP概述和原理">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#http协议"><span class="toc-nav-text">HTTP协议</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#http简介"><span class="toc-nav-text">HTTP简介</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#http-发展史"><span class="toc-nav-text">HTTP 发展史</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#http-0-9"><span class="toc-nav-text">HTTP/0.9</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#http-1-0"><span class="toc-nav-text">HTTP/1.0</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#http-1-1"><span class="toc-nav-text">HTTP/1.1</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#http-2"><span class="toc-nav-text">HTTP/2</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#http-模型和工作过程"><span class="toc-nav-text">HTTP 模型和工作过程</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#http-模型"><span class="toc-nav-text">HTTP 模型</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#http工作过程"><span class="toc-nav-text">HTTP工作过程</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#https-工作原理"><span class="toc-nav-text">HTTPS 工作原理</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#其他"><span class="toc-nav-text">其他</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#url长度限制"><span class="toc-nav-text">URL长度限制</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#get和post的区别"><span class="toc-nav-text">get和post的区别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#跨站攻击"><span class="toc-nav-text">跨站攻击</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#csrf"><span class="toc-nav-text">CSRF</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#xss"><span class="toc-nav-text">XSS</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                        
+                          <a class="tag" href="/tags/#原理" title="原理">原理</a>
+                        
+                          <a class="tag" href="/tags/#HTTP" title="HTTP">HTTP</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-users"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '31092bbdb23c158191a4',
+        clientSecret: '463191ce71c077f5a498222788a4ec1db633a5f8',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '链接：https://ykblog.github.io<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '链接：https://ykblog.github.io\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="/about" style="color:#26ab28 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

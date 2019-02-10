@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="zXV5v3GVz-znIgy-TUGQesI9MdP0oLjBmbAltEPS1fM">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 | 支付 | 金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【网络】TCP/IP概述和原理 - 杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.github.io/posts/network/【网络】TCP-IP概述和原理/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-network.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                            
+                              <a class="tag" href="/tags/#TCP" title="TCP">TCP</a>
+                            
+                              <a class="tag" href="/tags/#原理" title="原理">原理</a>
+                            
+                        </div>
+                        <h1>【网络】TCP/IP概述和原理</h1>
+                        <h2 class="subheading">网络-TCP/IP-TCP/IP概述和三次握手、四次挥手原理</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-04-03
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="tcp-ip协议说明">TCP/IP协议说明</h2>
+<hr>
+<p>两台计算机之间的通信是通过TCP/IP协议在因特网上进行的。<br>
+<strong>TCP</strong> : Transmission Control Protocol 传输控制协议。<br>
+<strong>IP</strong>：Internet Protocol  网际协议。<br>
+　　CP/IP不是一个协议，而是一个协议族的统称。里面包括了IP协议，IMCP协议，TCP协议，以及我们更加熟悉的http、ftp、pop3协议等等。电脑有了这些，就好像学会了外语一样，就可以和其他的计算机终端做自由的交流了。</p>
+<h3 id="ip协议">IP协议</h3>
+<ul>
+<li><strong>IP</strong>：计算机之间的通信</li>
+</ul>
+<p>概述：<br>
+　　IP协议是计算机用来相互识别的通信的一种机制，每台计算机都有一个IP用来在internet上标识这台计算机。 IP负责在因特网上发送和接收数据包。通过IP，消息（或者其他数据）被分割为小的独立的包，并通过因特网在计算机之间传送。IP负责将每个包路由至它的目的地。<br>
+　　IP协议仅仅是允许计算机相互发消息，但它并不检查消息是否以发送的次序到达而且没有损坏（只检查关键的头数据）。为了提供消息检验功能，直接在IP协议上设计了传输控制协议TCP。</p>
+<blockquote>
+<p>IP结构详述参见：   <a href="/posts/network/【网络】IP地址结构/" title="IP地址结构">IP地址结构</a></p>
+</blockquote>
+<h3 id="tcp协议">TCP协议</h3>
+<ul>
+<li><strong>TCP</strong>：应用程序之间的通信</li>
+</ul>
+<p>概述：<br>
+　　TCP确保数据包以正确的次序到达，并且尝试确认数据包的内容没有改变。TCP在IP地址之上引端口（port），它允许计算机通过网络提供各种服务。一些端口号为不同的服务保留，而且这些端口号是众所周知。在提供服务的机器上，有程序监听特定端口上的通信流。例如大多数电子邮件通信流出现在端口25上，用于wwww的HTTP通信流出现在80端口上。<br>
+　　TCP负责应用软件（比如你的浏览器）和网络软件之间的通信。IP负责计算机之间的通信。<br>
+　　TCP 负责将数据分割并装入IP包，IP负责将包发送至接受者，传输过程要经IP路由器负责根据通信量、网络中的错误或者其他参数来进行正确地寻址，然后在它们到达的时候重新组合它们。</p>
+<blockquote>
+<p>TCP协议概述以及OSI七层协议和TCP/IP四层协议的区别参见：   <a href="/posts/network/【网络】OSI和TCP-IP概述和区别/" title="OSI七层协议和TCP/IP四层协议">OSI七层协议和TCP/IP四层协议</a></p>
+</blockquote>
+<h2 id="tcp原理">TCP原理</h2>
+<hr>
+<h3 id="三次握手">三次握手</h3>
+<p>所谓三次握手（Three-Way Handshake）即建立TCP连接。<br>
+　　就是指建立一个TCP连接时，需要客户端和服务端总共发送3个包以确认连接的建立。在socket编程中，这一过程由客户端执行connect来触发，整个流程如下图所示：<br>
+<img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/tpc-three-way.png" alt=""></p>
+<ol>
+<li>第一次握手：Client将标志位SYN置为1，随机产生一个值seq=J，并将该数据包发送给Server，Client进入SYN_SENT状态，等待Server确认。</li>
+<li>第二次握手：Server收到数据包后由标志位SYN=1知道Client请求建立连接，Server将标志位SYN和ACK都置为1，ack=J+1，随机产生一个值seq=K，并将该数据包发送给Client以确认连接请求，Server进入SYN_RCVD状态。</li>
+<li>第三次握手：Client收到确认后，检查ack是否为J+1，ACK是否为1，如果正确则将标志位ACK置为1，ack=K+1，并将该数据包发送给Server，Server检查ack是否为K+1，ACK是否为1，如果正确则连接建立成功，Client和Server进入ESTABLISHED状态，完成三次握手，随后Client与Server之间可以开始传输数据了。</li>
+</ol>
+<h3 id="四次挥手">四次挥手</h3>
+<p>所谓四次挥手（Four-Way Wavehand）即终止TCP连接。<br>
+　　就是指断开一个TCP连接时，需要客户端和服务端总共发送4个包以确认连接的断开。在socket编程中，这一过程由客户端或服务端任一方执行close来触发，整个流程如下图所示（有下图的两种断开方式）：<br>
+<img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/tcp-four-way.png" alt=""><br>
+　　由于TCP连接时全双工的，因此，每个方向都必须要单独进行关闭，这一原则是当一方完成数据发送任务后，发送一个FIN来终止这一方向的连接，收到一个FIN只是意味着这一方向上没有数据流动了，即不会再收到数据了，但是在这个TCP连接上仍然能够发送数据，直到这一方向也发送了FIN。首先进行关闭的一方将执行主动关闭，而另一方则执行被动关闭，上图描述的即是如此。</p>
+<ol>
+<li>第一次挥手：Client发送一个FIN，用来关闭Client到Server的数据传送，Client进入FIN_WAIT_1状态。</li>
+<li>第二次挥手：Server收到FIN后，发送一个ACK给Client，确认序号为收到序号+1（与SYN相同，一个FIN占用一个序号），Server进入CLOSE_WAIT状态。</li>
+<li>第三次挥手：Server发送一个FIN，用来关闭Server到Client的数据传送，Server进入LAST_ACK状态。</li>
+<li>第四次挥手：Client收到FIN后，Client进入TIME_WAIT状态，接着发送一个ACK给Server，确认序号为收到序号+1，Server进入CLOSED状态，完成四次挥手。<br>
+　　上面是一方主动关闭，另一方被动关闭的情况，实际中还会出现同时发起主动关闭的情况，具体流程如下图：<br>
+<img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/tcp-close.png" alt=""></li>
+</ol>
+<h3 id="syn攻击">SYN攻击</h3>
+<p>分析：<br>
+　　在三次握手过程中，Server发送SYN-ACK之后，收到Client的ACK之前的TCP连接称为半连接（half-open connect），此时Server处于SYN_RCVD状态，当收到ACK后，Server转入ESTABLISHED状态。SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client的确认，由于源地址是不存在的，因此，Server需要不断重发直至超时，这些伪造的SYN包将产时间占用未连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络堵塞甚至系统瘫痪。SYN攻击时一种典型的DDOS攻击，检测SYN攻击的方式非常简单，即当Server上有大量半连接状态且源IP地址是随机的，则可以断定遭到SYN攻击了，使用如下命令可以让之现行：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#netstat -nap | grep SYN_RECV</span></span><br></pre></td></tr></table></figure>
+<h2 id="常见问题">常见问题</h2>
+<h3 id="为什么握手和挥手不一样？">为什么握手和挥手不一样？</h3>
+<p>即为什么建立连接是三次握手，而关闭连接却是四次挥手呢？<br>
+　　这是因为服务端在LISTEN状态下，收到建立连接请求的SYN报文后，把ACK和SYN放在一个报文里发送给客户端。而关闭连接时，当收到对方的FIN报文时，仅仅表示对方不再发送数据了但是还能接收数据，己方也未必全部数据都发送给对方了，所以己方可以立即close，也可以发送一些数据给对方后，再发送FIN报文给对方来表示同意现在关闭连接，因此，己方ACK和FIN一般都会分开发送。</p>
+<h3 id="为什么要三次握手">为什么要三次握手?</h3>
+<p>那为什么非要三次呢?怎么觉得两次就可以完成了。<br>
+　　在谢希仁的《计算机网络》中是这样说的：为了防止已失效的连接请求报文段突然又传送到了服务端，因而产生错误。在书中同时举了一个例子，如下：<br>
+　　“已失效的连接请求报文段”的产生在这样一种情况下：client发出的第一个连接请求报文段并没有丢失，而是在某个网络结点长时间的滞留了，以致延误到连接释放以后的某个时间才到达server。本来这是一个早已失效的报文段。但server收到此失效的连接请求报文段后，就误认为是client再次发出的一个新的连接请求。于是就向client发出确认报文段，同意建立连接。假设不采用“三次握手”，那么只要server发出确认，新的连接就建立了。由于现在client并没有发出建立连接的请求，因此不会理睬server的确认，也不会向server发送数据。但server却以为新的运输连接已经建立，并一直等待client发来数据。这样，server的很多资源就白白浪费掉了。采用“三次握手”的办法可以防止上述现象发生。例如刚才那种情况，client不会向server的确认发出确认。server由于收不到确认，就知道client并没有要求建立连接。”<br>
+　　这就很明白了，防止了服务器端的一直等待而浪费资源。</p>
+<h3 id="为什么要四次挥手">为什么要四次挥手?</h3>
+<p>TCP协议是一种面向连接的、可靠的、基于字节流的运输层通信协议。<br>
+　　TCP是全双工模式，这就意味着，当主机1发出FIN报文段时，只是表示主机1已经没有数据要发送了，主机1告诉主机2， 它的数据已经全部发送完毕了;但是，这个时候主机1还是可以接受来自主机2的数据;当主机2返回ACK报文 段时，表示它已经知道主机1没有数据发送了，但是主机2还是可以发送数据到主机1的;当主机2也发送了FIN 报文段时，这个时候就表示主机2也没有数据要发送了，就会告诉主机1，我也没有数据要发送了，之后彼此 就会愉快的中断这次TCP连接。如果要正确的理解四次挥手的原理，就需要了解四次挥手过程中的状态变化。</p>
+<ul>
+<li><strong>FIN_WAIT_1</strong>: 这个状态要好好解释一下，其实FIN_WAIT_1和FIN_WAIT_2状态的真正含义都是表示等待对方的FIN报文。而这两种状态的区别是：FIN_WAIT_1状态实际上是当SOCKET在ESTABLISHED状态时， 它想主动关闭连接，向对方发送了FIN报文，此时该SOCKET即进入到FIN_WAIT_1状态。而当对方回应ACK报文后，则进入到FIN_WAIT_2状态，当然在实际的正常情况下，无论对方何种情况下，都应该马上回应ACK 报文，所以FIN_WAIT_1状态一般是比较难见到的，而FIN_WAIT_2状态还有时常常可以用netstat看到。 (主动方)</li>
+<li><strong>FIN_WAIT_2</strong>：上面已经详细解释了这种状态，实际上FIN_WAIT_2状态下的SOCKET，表示半连接，也即 有一方要求close连接，但另外还告诉对方，我暂时还有点数据需要传送给你(ACK信息)，稍后再关闭连接。 (主动方)</li>
+<li><strong>CLOSE_WAIT</strong>：这种状态的含义其实是表示在等待关闭。怎么理解呢?当对方close一个SOCKET后发送FIN 报文给自己，你系统毫无疑问地会回应一个ACK报文给对方，此时则进入到CLOSE_WAIT状态。接下来呢，实 际上你真正需要考虑的事情是察看你是否还有数据发送给对方，如果没有的话，那么你也就可以 close这个 SOCKET，发送FIN报文给对方，也即关闭连接。所以你在CLOSE_WAIT状态下，需要完成的事情是等待你去关 闭连接。(被动方)</li>
+<li><strong>LAST_ACK</strong>: 这个状态还是比较容易好理解的，它是被动关闭一方在发送FIN报文后，最后等待对方的ACK报 文。当收到ACK报文后，也即可以进入到CLOSED可用状态了。(被动方)</li>
+<li><strong>TIME_WAIT</strong>: 表示收到了对方的FIN报文，并发送出了ACK报文，就等2MSL后即可回到CLOSED可用状态了。 如果FINWAIT1状态下，收到了对方同时带FIN标志和ACK标志的报文时，可以直接进入到TIME_WAIT状态，而无 须经过FIN_WAIT_2状态。(主动方)</li>
+<li><strong>CLOSED</strong>: 表示连接中断。</li>
+</ul>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/network/【网络】HTTP原理与概述/" data-toggle="tooltip" data-placement="top" title="【网络】HTTP原理与概述"><i class="fa fa-hand-o-left"></i> 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/network/【网络】IP地址结构/" data-toggle="tooltip" data-placement="top" title="【网络】IP地址结构">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#tcp-ip协议说明"><span class="toc-nav-text">TCP/IP协议说明</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#ip协议"><span class="toc-nav-text">IP协议</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#tcp协议"><span class="toc-nav-text">TCP协议</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#tcp原理"><span class="toc-nav-text">TCP原理</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#三次握手"><span class="toc-nav-text">三次握手</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#四次挥手"><span class="toc-nav-text">四次挥手</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#syn攻击"><span class="toc-nav-text">SYN攻击</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#常见问题"><span class="toc-nav-text">常见问题</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#为什么握手和挥手不一样？"><span class="toc-nav-text">为什么握手和挥手不一样？</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#为什么要三次握手"><span class="toc-nav-text">为什么要三次握手?</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#为什么要四次挥手"><span class="toc-nav-text">为什么要四次挥手?</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                        
+                          <a class="tag" href="/tags/#TCP" title="TCP">TCP</a>
+                        
+                          <a class="tag" href="/tags/#原理" title="原理">原理</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-users"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '31092bbdb23c158191a4',
+        clientSecret: '463191ce71c077f5a498222788a4ec1db633a5f8',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '链接：https://ykblog.github.io<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '链接：https://ykblog.github.io\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="/about" style="color:#26ab28 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

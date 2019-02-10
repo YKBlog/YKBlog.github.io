@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="zXV5v3GVz-znIgy-TUGQesI9MdP0oLjBmbAltEPS1fM">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="yangkai Blog | 杨凯 | 支付 | 金融 ｜　Java | 架构">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【JUC】ThreadLocal剖析 - 杨凯的博客 | YK Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.github.io/posts/Java/【JUC】ThreadLocal剖析/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-Java.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Java" title="Java">Java</a>
+                            
+                              <a class="tag" href="/tags/#JUC" title="JUC">JUC</a>
+                            
+                              <a class="tag" href="/tags/#ThreadLocal" title="ThreadLocal">ThreadLocal</a>
+                            
+                              <a class="tag" href="/tags/#源码" title="源码">源码</a>
+                            
+                        </div>
+                        <h1>【JUC】ThreadLocal剖析</h1>
+                        <h2 class="subheading">Java-JUC-ThreadLocal深度剖析</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-08-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="threadlocal简介">ThreadLocal简介</h2>
+<hr>
+<p>ThreadLocal，很多地方叫做线程本地变量，也有些地方叫做线程本地存储。</p>
+<h3 id="正确理解threadlocal">正确理解Threadlocal</h3>
+<p>ThreadLocal并不解决多线程共享变量的问题。既然变量不共享，那就更谈不上同步的问题。</p>
+<blockquote>
+<p>它的基本原理是，同一个ThreadLocal所包含的对象（对ThreadLocal&lt; String &gt;而言即为String类型变量），在不同的Thread中有不同的副本。
+ThreadLocal适用于每个线程需要自己独立的实例且该实例需要在多个方法中被使用，也即变量在线程间隔离而在方法或类间共享的场景。</p>
+</blockquote>
+<p>综上所述，ThreadLocal适用于如下两种场景：</p>
+<ul>
+<li>每个线程需要有自己单独的实例</li>
+<li>实例需要在多个方法中共享，但不希望被多线程共享</li>
+</ul>
+<h3 id="猜测threadlocal实现原理">猜测Threadlocal实现原理</h3>
+<h4 id="猜测方案一">猜测方案一</h4>
+<blockquote>
+<p>我们通常想到的实现方案<br>
+ThreadLocal维护一个Map，键是Thread，值是它在该Thread内的实例。<br>
+<img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/threadLocal-map.png" alt=""></p>
+</blockquote>
+<p>该方案可满足上文提到的每个线程内一个独立备份的要求。但是有两个问题：</p>
+<ul>
+<li>增加线程与减少线程均需要写Map，故需保证该Map线程安全；出现锁的问题，原因在于多线程访问同一个Map 。</li>
+<li>线程结束时，需要保证它所访问的所有ThreadLocal中对应的映射均删除，否则可能会引起内存泄漏。（线程结束时，需要保证它所访问的所有ThreadLocal中对应的映射均删除，否则可能会引起内存泄漏。</li>
+</ul>
+<h4 id="猜测方案二">猜测方案二</h4>
+<blockquote>
+<p>jdk源码的实现方案<br>
+该Map由Thread维护，从而使得每个Thread只访问自己的Map，那就不存在多线程写的问题，也就不需要锁了。<br>
+<img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/threadLocal-jdk.png" alt=""></p>
+</blockquote>
+<p>但是由于每个线程访问某ThreadLocal变量后，都会在自己的Map内维护该ThreadLocal变量与具体实例的映射，如果不删除这些引用（映射），则这些 ThreadLocal 不能被回收，可能会造成内存泄漏。<br>
+后文会介绍 JDK 如何解决该问题。</p>
+<h2 id="threadlocal使用场景">Threadlocal使用场景</h2>
+<hr>
+<h3 id="例子：数据库连接管理">例子：数据库连接管理</h3>
+<blockquote>
+<p>看下下面例子存在的问题</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Comment</span>  数据库连接管理</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@auther</span> yangkai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018/8/7 17:39</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConnectionManager</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> Connection connection=<span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获取db连接</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> url</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> user</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> pass</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">(String url,String user,String pass)</span></span>&#123;</span><br><span class="line">      <span class="keyword">if</span>(connection==<span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">            connection = DriverManager.getConnection(url,user,pass);</span><br><span class="line">         &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> connection;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 关闭db连接</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">if</span>(connection!=<span class="keyword">null</span>)</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">            connection.close();</span><br><span class="line">         &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">         &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>单线程没有问题；多线程环境呢？</p>
+<h3 id="问题分析">问题分析</h3>
+<p>存在如下两个安全问题：</p>
+<ol>
+<li>getConnection方法没有加锁或同步，可能会获取多个数据库连接；一般数据库连接操作都要求做成单例，放在连接池中使用。</li>
+<li>getConnection方法和close方法没有同步，connection又是共享变量，存在一个线程刚获取连接，但是被另一个线程关闭了。</li>
+</ol>
+<blockquote>
+<p>局部使用这个数据库连接管理工具可以解决以上多线程的问题，因为局部方法中现用现创建也就没有多线程问题了；<br>
+但是这样做频繁的开启连接、关闭连接，严重消耗系统性能；数据库连接操作频繁，也造成对数据库的压力。</p>
+</blockquote>
+<h2 id="剖析threadlocal">剖析ThreadLocal</h2>
+<hr>
+<h3 id="核心的几个方法">核心的几个方法</h3>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span>(<span class="params"></span>)</span> &#123; &#125;   <span class="comment">//用来获取ThreadLocal在当前线程中保存的变量副本</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span>(<span class="params">T <span class="keyword">value</span></span>)</span> &#123; &#125;   <span class="comment">//用来设置当前线程中变量的副本</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span>(<span class="params"></span>)</span> &#123; &#125;   <span class="comment">//用来移除当前线程中变量的副本</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span>(<span class="params"></span>)</span> &#123; &#125;  <span class="comment">//是一个protected方法，一般是用来在使用时进行重写的，它是一个延迟加载方法</span></span><br></pre></td></tr></table></figure>
+<h4 id="get方法实现">get方法实现</h4>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> T <span class="keyword">get</span>() &#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="literal">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);     <span class="comment">//注意这里获取键值传入的是this，不是当前线程t</span></span><br><span class="line">        <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(<span class="meta-string">"unchecked"</span>)</span></span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();    <span class="comment">//如果map为空，则调用setInitialValue方法返回value</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>getMap方法做了什么呢？<br>
+　　返回当前线程t中的一个成员变量threadLocals；threadlocals实际就是一个threadLocalMap；threadLocalMap是ThreadLocal类中的一个内部类;做存储结构使用.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ThreadLocalMap</span> getMap(<span class="type">Thread</span> t) &#123;</span><br><span class="line">    <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line">static <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalMap</span> </span>&#123;</span><br><span class="line">    static <span class="class"><span class="keyword">class</span> <span class="title">Entry</span> <span class="keyword">extends</span> <span class="title">WeakReference&lt;ThreadLocal&lt;?&gt;&gt;</span> </span>&#123;</span><br><span class="line">        <span class="comment">/** The value associated with this ThreadLocal. */</span></span><br><span class="line">        <span class="type">Object</span> value;</span><br><span class="line">        <span class="type">Entry</span>(<span class="type">ThreadLocal</span>&lt;?&gt; k, <span class="type">Object</span> v) &#123;</span><br><span class="line">            <span class="keyword">super</span>(k);</span><br><span class="line">            value = v;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>Entry类继承了WeakReference&lt;ThreadLocal&lt;?&gt;&gt;，即每个Entry对象都有一个ThreadLocal的弱引用（作为key），这是为了防止内存泄露。一旦线程结束，key变为一个不可达的对象，这个Entry就可以被GC了。<br>
+　　使用弱引用的原因在于，当没有强引用指向ThreadLocal变量时，它可被回收，从而避免ThreadLocal不能被回收而造成的内存泄漏的问题。<br>
+　　但是，这里又可能出现另外一种内存泄漏的问题。ThreadLocalMap维护ThreadLocal变量与具体实例的映射，当ThreadLocal变量被回收后，该映射的键变为 null，该Entry无法被移除。从而使得实例被该Entry引用而无法被回收造成内存泄漏。<br>
+　　ThreadLocalMap的set方法通过调用replaceStaleEntry方法回收键为null的Entry对象的值（即为具体实例）以及Entry对象本身从而防止内存泄漏。</p>
+<h4 id="setinitialvalue方法实现">setInitialValue方法实现</h4>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    T <span class="keyword">value</span> = initialValue();</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="literal">null</span>)</span><br><span class="line">        map.<span class="keyword">set</span>(<span class="keyword">this</span>, <span class="keyword">value</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, <span class="keyword">value</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">value</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果map不为空，就设置键值对，为空，再创建Map，看一下createMap的实现</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">    t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="set方法实现">set方法实现</h4>
+<p>不再多说，跟setInitialValue实现如出一辙。区别是value是传进来的，前者是需要内部重写的一个方法返回的。</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="literal">void</span> <span class="built_in">set</span>(T value) &#123;</span><br><span class="line">    <span class="keyword">Thread</span> t = <span class="keyword">Thread</span>.currentThread();</span><br><span class="line">    ThreadLocalMap <span class="built_in">map</span> = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">map</span> != <span class="built_in">null</span>)</span><br><span class="line">        <span class="built_in">map</span>.<span class="built_in">set</span>(this, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个Thread对象内部都维护了一个ThreadLocalMap这样一个ThreadLocal的Map，可以存放若干个ThreadLocal。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/* ThreadLocal values pertaining <span class="keyword">to</span> this thread. This map <span class="keyword">is</span> maintained</span><br><span class="line"> * <span class="keyword">by</span> <span class="keyword">the</span> ThreadLocal <span class="built_in">class</span>. */</span><br><span class="line">ThreadLocal.ThreadLocalMap threadLocals = null;</span><br></pre></td></tr></table></figure>
+<p>至此，大部分人已经明白了ThreadLocal是如何为每个线程创建变量的副本的：<br>
+　　首先，在每个线程Thread内部有一个ThreadLocalMap类型的成员变量threadLocals，这个threadLocals就是用来存储实际的变量副本的，键值为当前ThreadLocal变量，value为变量副本（即T类型的变量）。<br>
+　　初始时，在Thread里面，threadLocals为空，当通过ThreadLocal变量调用get()方法或者set()方法，就会对Thread类中的threadLocals进行初始化，并且以当前ThreadLocal变量为键值，以ThreadLocal要保存的副本变量为value，存到threadLocals。然后在当前线程里面，如果要使用副本变量，就可以通过get方法在threadLocals里面查找。</p>
+<h4 id="总结一下">总结一下</h4>
+<ol>
+<li>实际的通过ThreadLocal创建的副本是存储在每个线程Thread自己的threadLocals中的；</li>
+<li>为何threadLocals的类型ThreadLocalMap的键值为ThreadLocal对象，因为每个线程中可有多个threadLocal变量。将ThreadLocal和线程巧妙地绑定在了一起，即可以保证无用的ThreadLocal被及时回收，不会造成内存泄露，又可以提升性能。</li>
+<li>在进行get之前，必须先set，否则会报空指针异常；如果想在get之前不需要调用set就能正常访问的话，必须重写initialValue()方法。</li>
+<li>因为threadlocal底层的threadlocalmap的key存的是this（threadlocal本身），并且每个thread线程存在一个threadlocalmap变量，所以同一个thread可以放多个值；颠覆的是如果大家认为的key存的是thread，这样一个thread只能存放一个数据了。</li>
+</ol>
+<h3 id="扩展说下threadlocalmap的实现">扩展说下ThreadLocalMap的实现</h3>
+<p>可能大部分人以为threadlocal内部使用了一个hashmap来实现存储，但实际threadlocal自己在内部实现了一个类似hashmap的threadLocalMap。</p>
+<ul>
+<li>先看下ThreadLocalMap的构造方法</li>
+</ul>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;</span><br><span class="line">    <span class="keyword">table</span> = new <span class="comment">Entry[INITIAL_CAPACITY]</span>;</span><br><span class="line">    int i = firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">table</span>[i] = new <span class="comment">Entry(firstKey, firstValue)</span>;</span><br><span class="line">    size = <span class="number">1</span>;</span><br><span class="line">    setThreshold(INITIAL_CAPACITY);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>构造函数的第一个参数就是本ThreadLocal实例(this)，第二个参数就是要保存的线程本地变量。构造函数首先创建一个长度为16的Entry数组，然后计算出firstKey对应的哈希值，然后存储到table中，并设置size和threshold。<br>
+　　注意一个细节，计算hash的时候里面采用了hashCode &amp; (size - 1)的算法，这相当于取模运算hashCode % size的一个更高效的实现（和HashMap中的思路相同）。正是因为这种算法，我们要求size必须是2的指数，因为这可以使得hash发生冲突的次数减小。</p>
+<ul>
+<li>再看下ThreadLocalMap的set方法</li>
+</ul>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="built_in">set</span>(ThreadLocal&lt;?&gt; <span class="built_in">key</span>, <span class="keyword">Object</span> value) &#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="built_in">int</span> len = tab.length;</span><br><span class="line">    <span class="built_in">int</span> i = <span class="built_in">key</span>.threadLocalHashCode &amp; (len<span class="number">-1</span>);</span><br><span class="line">    <span class="keyword">for</span> (Entry e = tab[i];</span><br><span class="line">         e != <span class="keyword">null</span>;</span><br><span class="line">         e = tab[i = nextIndex(i, len)]) &#123;</span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.<span class="built_in">get</span>();</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="built_in">key</span>) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">            replaceStaleEntry(<span class="built_in">key</span>, value, i);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    tab[i] = <span class="keyword">new</span> Entry(<span class="built_in">key</span>, value);</span><br><span class="line">    <span class="built_in">int</span> sz = ++<span class="built_in">size</span>;</span><br><span class="line">    <span class="keyword">if</span> (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)</span><br><span class="line">        rehash();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>看下nextIndex方法，ThreadLocalMap是如何计算hash的</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">nextIndex</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> ((i + <span class="number">1</span> &lt; len) ? i + <span class="number">1</span> : <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们看到ThreadLocalMap解决冲突的方法是线性探测法（不断加1），而不是HashMap的链地址法，这一点也能从Entry的结构上推断出来。</p>
+<h2 id="使用threadlocal解决案例中的多线程并发问题">使用ThreadLocal解决案例中的多线程并发问题</h2>
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Comment</span>  数据库连接管理  使用threadlocal 优化版</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@auther</span> yangkai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018/8/7 17:39</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConnectionManager</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Connection&gt; THREAD_LOCAL = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获取db连接</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> url</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> user</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> pass</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">(String url,String user,String pass)</span></span>&#123;</span><br><span class="line">      Connection connection = THREAD_LOCAL.get();</span><br><span class="line">      <span class="keyword">if</span>(connection==<span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">            connection = DriverManager.getConnection(url,user,pass);</span><br><span class="line">         &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> connection;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 关闭db连接</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>&#123;</span><br><span class="line">      Connection connection = THREAD_LOCAL.get();</span><br><span class="line">      <span class="keyword">if</span>(connection!=<span class="keyword">null</span>)</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">            connection.close();</span><br><span class="line">         &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">         &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用threadllocal出现的问题">使用ThreadlLocal出现的问题</h2>
+<hr>
+<h3 id="threadlocal为什么会内存泄漏">ThreadLocal为什么会内存泄漏</h3>
+<p>分析：<br>
+　　ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用来引用它，那么系统GC的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链：Thread Ref -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value永远无法回收，造成内存泄漏。<br>
+　　其实，ThreadLocalMap的设计中已经考虑到这种情况，也加上了一些防护措施：在ThreadLocal的get(),set(),remove()的时候都会清除线程ThreadLocalMap里所有key为null的value。<br>
+但是这些被动的预防措施并不能保证不会内存泄漏：使用static的ThreadLocal，延长了ThreadLocal的生命周期，可能导致的内存泄漏；分配使用了ThreadLocal又不再调用get(),set(),remove()方法，那么就会导致内存泄漏。</p>
+<h3 id="threadlocal内存泄漏怎么避免呢？">ThreadLocal内存泄漏怎么避免呢？</h3>
+<ul>
+<li>每次使用完ThreadLocal，都调用它的remove()方法，清除数据。</li>
+<li>在使用线程池的情况下，没有及时清理ThreadLocal，不仅是内存泄漏的问题，更严重的是可能导致业务逻辑出现问题。所以，使用ThreadLocal就跟加锁完要解锁一样，用完就清理。</li>
+</ul>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/pay/【账户】账户体系-三户模型/" data-toggle="tooltip" data-placement="top" title="【账务】账户体系-三户模型"><i class="fa fa-hand-o-left"></i> 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/network/【网络】OSI和TCP-IP概述和区别/" data-toggle="tooltip" data-placement="top" title="【网络】OSI和TCP/IP概述和区别">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#threadlocal简介"><span class="toc-nav-text">ThreadLocal简介</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#正确理解threadlocal"><span class="toc-nav-text">正确理解Threadlocal</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#猜测threadlocal实现原理"><span class="toc-nav-text">猜测Threadlocal实现原理</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#猜测方案一"><span class="toc-nav-text">猜测方案一</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#猜测方案二"><span class="toc-nav-text">猜测方案二</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#threadlocal使用场景"><span class="toc-nav-text">Threadlocal使用场景</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#例子：数据库连接管理"><span class="toc-nav-text">例子：数据库连接管理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#问题分析"><span class="toc-nav-text">问题分析</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#剖析threadlocal"><span class="toc-nav-text">剖析ThreadLocal</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#核心的几个方法"><span class="toc-nav-text">核心的几个方法</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#get方法实现"><span class="toc-nav-text">get方法实现</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#setinitialvalue方法实现"><span class="toc-nav-text">setInitialValue方法实现</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#set方法实现"><span class="toc-nav-text">set方法实现</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#总结一下"><span class="toc-nav-text">总结一下</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#扩展说下threadlocalmap的实现"><span class="toc-nav-text">扩展说下ThreadLocalMap的实现</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#使用threadlocal解决案例中的多线程并发问题"><span class="toc-nav-text">使用ThreadLocal解决案例中的多线程并发问题</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#使用threadllocal出现的问题"><span class="toc-nav-text">使用ThreadlLocal出现的问题</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#threadlocal为什么会内存泄漏"><span class="toc-nav-text">ThreadLocal为什么会内存泄漏</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#threadlocal内存泄漏怎么避免呢？"><span class="toc-nav-text">ThreadLocal内存泄漏怎么避免呢？</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#Java" title="Java">Java</a>
+                        
+                          <a class="tag" href="/tags/#JUC" title="JUC">JUC</a>
+                        
+                          <a class="tag" href="/tags/#ThreadLocal" title="ThreadLocal">ThreadLocal</a>
+                        
+                          <a class="tag" href="/tags/#源码" title="源码">源码</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-users"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN·Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '31092bbdb23c158191a4',
+        clientSecret: '463191ce71c077f5a498222788a4ec1db633a5f8',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '链接：https://ykblog.github.io<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '链接：https://ykblog.github.io\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="/about" style="color:#26ab28 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.github.io">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '9d85574da993e5f4e603c433c580a568';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>
