@@ -41,7 +41,7 @@
 }
 .archive-year:before {
   font-family: "FontAwesome";
-  content: "\f273";
+  content: "\f073";
   margin-right: 0.2em;
 }
 .archives-tags-wrap {
