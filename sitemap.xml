@@ -2,22 +2,22 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
     <sitemap>
-        <loc>http://ykblog.github.io/post-sitemap.xml</loc>
+        <loc>http://ykblog.top/post-sitemap.xml</loc>
         <lastmod>2019-02-17T14:39:05.331Z</lastmod>
     </sitemap>
 
     <sitemap>
-        <loc>http://ykblog.github.io/page-sitemap.xml</loc>
-        <lastmod>2019-02-12T16:35:46.890Z</lastmod>
+        <loc>http://ykblog.top/page-sitemap.xml</loc>
+        <lastmod>2019-02-19T14:15:59.979Z</lastmod>
     </sitemap>
 
     <sitemap>
-        <loc>http://ykblog.github.io/category-sitemap.xml</loc>
+        <loc>http://ykblog.top/category-sitemap.xml</loc>
         <lastmod>2019-02-10T05:01:09.009Z</lastmod>
     </sitemap>
 
     <sitemap>
-        <loc>http://ykblog.github.io/tag-sitemap.xml</loc>
+        <loc>http://ykblog.top/tag-sitemap.xml</loc>
         <lastmod>2019-02-10T05:01:09.009Z</lastmod>
     </sitemap>
 

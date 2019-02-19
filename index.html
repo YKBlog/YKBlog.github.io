@@ -7,18 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="google-site-verification" content="zXV5v3GVz-znIgy-TUGQesI9MdP0oLjBmbAltEPS1fM">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="yangkai Blog | 杨凯 | 支付 | 金融 ｜　Java | 架构">
-    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构">
+    <meta name="description" content="yangkai Blog | 杨凯 | 支付 | 金融 ｜ Java | 架构 | 网络">
+    <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构, 网络">
     <link rel="shortcut icon" href="/img/favicon.ico">
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          YK Blog | 支付|Java|架构
+          YK Blog | 支付 | Java | 架构 | 网络
         
     </title>
 
-    <link rel="canonical" href="http://ykblog.github.io/">
+    <link rel="canonical" href="http://ykblog.top/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -137,14 +137,14 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -366,6 +366,46 @@
 
 <div class="post-preview">
 
+    <a href="/posts/pay/【账务】复式记账/">
+        <h2 class="post-title">
+            【账务】复式记账
+        </h2>
+        <h3 class="post-subtitle">
+            大账务系统-会计知识-复式记账
+        </h3>
+        <div class="post-content-preview">
+            概念和特征
+
+复式记账的概念
+定义：复式记账法是指对每一笔经济业务都要以相等的金额，同时在两个或两个以上相互联系的账户中进行登记的记账方法。
+
+对每项经济业务按相等金额在两个或两个以上有关账户中同时进行登记的方法。
+复式记账的理论依据是会计基本等式。
+复式记账按记账符号，记账规则、试算平衡方法的不同，可分为借贷记账法，增减记账法和收付记账法。
+借贷记账法是一种最杂的、当今运用最广泛的复式记账......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by yangkai on
+            2018-10-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#支付" title="支付">支付</a>
+            
+              <a href="/tags/#账务" title="账务">账务</a>
+            
+              <a href="/tags/#会计" title="会计">会计</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/posts/pay/【账务】会计科目/">
         <h2 class="post-title">
             【账务】会计科目
@@ -415,29 +455,28 @@
 
 <div class="post-preview">
 
-    <a href="/posts/pay/【账务】复式记账/">
+    <a href="/posts/pay/【账户】账户体系-账户设计/">
         <h2 class="post-title">
-            【账务】复式记账
+            【账户】账户体系-账户设计
         </h2>
         <h3 class="post-subtitle">
-            大账务系统-会计知识-复式记账
+            大账务系统-账户体系-账户设计
         </h3>
         <div class="post-content-preview">
-            概念和特征
+            账户概念
 
-复式记账的概念
-定义：复式记账法是指对每一笔经济业务都要以相等的金额，同时在两个或两个以上相互联系的账户中进行登记的记账方法。
+账户设置，一般是从交易开始的。 交易的实现必须有账户的支持，账户是交易的基本构成元素。
+　　从支付系统的角度，交易中涉及到的资金流是资金从一个账户流向另一个账户。发起交易的一方，被称之为交易主体，他可以是个人，也可以是一个机构。
+资金从该主体所拥有的账户中流出。 而接收交易的一方，被称为交易对手，他也可以是个人，或者机构。
+账户体系介绍
 
-对每项经济业务按相等金额在两个或两个以上有关账户中同时进行登记的方法。
-复式记账的理论依据是会计基本等式。
-复式记账按记账符号，记账规则、试算平衡方法的不同，可分为借贷记账法，增减记账法和收付记账法。
-借贷记账法是一种最杂的、当今运用最广泛的复式记账......
+账户体系设计整体原则是参考会计学原理关于......
         </div>
     </a>
     
         <p class="post-meta" style="margin: 10px 0;">
             Posted by yangkai on
-            2018-10-01
+            2018-09-02
         </p>
         <div class="tags">
             
@@ -445,7 +484,7 @@
             
               <a href="/tags/#账务" title="账务">账务</a>
             
-              <a href="/tags/#会计" title="会计">会计</a>
+              <a href="/tags/#账户" title="账户">账户</a>
             
         </div>
     
@@ -475,45 +514,6 @@
 对账的需求: 包括和支付渠道、商户、个人的对账需求，核对交易和账户余额是否正确。
 风控的需求: 如反洗钱、反欺诈等，都需要依赖于账户体系来提供核心数据。
 信用的需......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by yangkai on
-            2018-09-02
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#支付" title="支付">支付</a>
-            
-              <a href="/tags/#账务" title="账务">账务</a>
-            
-              <a href="/tags/#账户" title="账户">账户</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/posts/pay/【账户】账户体系-账户设计/">
-        <h2 class="post-title">
-            【账户】账户体系-账户设计
-        </h2>
-        <h3 class="post-subtitle">
-            大账务系统-账户体系-账户设计
-        </h3>
-        <div class="post-content-preview">
-            账户概念
-
-账户设置，一般是从交易开始的。 交易的实现必须有账户的支持，账户是交易的基本构成元素。
-　　从支付系统的角度，交易中涉及到的资金流是资金从一个账户流向另一个账户。发起交易的一方，被称之为交易主体，他可以是个人，也可以是一个机构。
-资金从该主体所拥有的账户中流出。 而接收交易的一方，被称为交易对手，他也可以是个人，或者机构。
-账户体系介绍
-
-账户体系设计整体原则是参考会计学原理关于......
         </div>
     </a>
     
@@ -750,7 +750,7 @@ OSI是七层网络架构
         <input type="search" name="q" placeholder="google站内搜索"></span>
       <span class="button">
         <input type="submit" value="Google"></span>
-      <input name="sitesearch" type="hidden" value="ykblog.github.io">
+      <input name="sitesearch" type="hidden" value="ykblog.top">
     </form>
   </div>
   
@@ -767,7 +767,7 @@ OSI是七层网络架构
         <input name="tn" type="hidden" value="bds">
         <input name="cl" type="hidden" value="3">
         <input name="ct" type="hidden" value="2097152">
-        <input name="si" type="hidden" value="ykblog.github.io">
+        <input name="si" type="hidden" value="ykblog.top">
       </form>
   </div>
 </div>  
@@ -950,15 +950,15 @@ input::-webkit-input-placeholder {
         </li>
       
         <li>
-          <a href="/posts/pay/【账务】会计科目/">【账务】会计科目</a>
-        </li>
-      
-        <li>
           <a href="/posts/pay/【账务】复式记账/">【账务】复式记账</a>
         </li>
       
         <li>
-          <a href="/posts/pay/【账户】账户体系-账户建模/">【账户】账户体系-账户建模</a>
+          <a href="/posts/pay/【账务】会计科目/">【账务】会计科目</a>
+        </li>
+      
+        <li>
+          <a href="/posts/pay/【账户】账户体系-账户设计/">【账户】账户体系-账户设计</a>
         </li>
       
     </ul>
@@ -1113,7 +1113,7 @@ input::-webkit-input-placeholder {
                     <span style="display: inline-block; margin: 0 5px;">
                         <i class="fa fa-heart"></i>
                     </span> 
-                    Remould by <a href="http://ykblog.github.io">yangkai</a>
+                    Remould by <a href="http://ykblog.top">yangkai</a>
                   <!--
                     <iframe
                         style="margin-left: 2px; margin-bottom:-5px;"
@@ -1151,7 +1151,7 @@ input::-webkit-input-placeholder {
 <script>
     // only load tagcloud.js in tag.html
     if($('#tag_cloud').length !== 0){
-        async("http://ykblog.github.io/js/jquery.tagcloud.js",function(){
+        async("http://ykblog.top/js/jquery.tagcloud.js",function(){
             $.fn.tagcloud.defaults = {
                 //size: {start: 1, end: 1, unit: 'em'},
                 color: {start: '#bbbbee', end: '#0085a1'},
@@ -1195,7 +1195,7 @@ input::-webkit-input-placeholder {
 
 <script>
     // dynamic User by Hux
-    var _baId = '4c0ddc85eb38fae6b28d08daae0610ac';
+    var _baId = '01fc82d384955158dd75bb41fb7e5a30';
 
     // Originial
     var _hmt = _hmt || [];
