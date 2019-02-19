@@ -5,7 +5,8 @@
 <head><meta name="generator" content="Hexo 3.8.0">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="google-site-verification" content="zXV5v3GVz-znIgy-TUGQesI9MdP0oLjBmbAltEPS1fM">
+    <meta name="google-site-verification" content="dNVWpYUQN4ENQD-usF1vaBSIu_gnMcxvsVYzmELomoA">
+    <meta name="baidu-site-verification" content="9FxBYJOcht">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="yangkai Blog | 杨凯 | 支付 | 金融 ｜ Java | 架构 | 网络">
     <meta name="keyword" content="杨凯, yangkai, 杨凯的博客, 支付, 对账, 账务, 清结算, 金融, Java, 架构, 网络">
@@ -123,6 +124,13 @@
 
                         
                         <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
                             <a href="/archive/">Archives</a>
                         </li>
                         
@@ -131,13 +139,6 @@
                         
                         <li>
                             <a href="/categories/">Categories</a>
-                        </li>
-                        
-                    
-
-                        
-                        <li>
-                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -455,22 +456,26 @@
 
 <div class="post-preview">
 
-    <a href="/posts/pay/【账户】账户体系-账户设计/">
+    <a href="/posts/pay/【账户】账户体系-账户建模/">
         <h2 class="post-title">
-            【账户】账户体系-账户设计
+            【账户】账户体系-账户建模
         </h2>
         <h3 class="post-subtitle">
-            大账务系统-账户体系-账户设计
+            大账务系统-账户体系-账户建模
         </h3>
         <div class="post-content-preview">
-            账户概念
+            账户建模要素
 
-账户设置，一般是从交易开始的。 交易的实现必须有账户的支持，账户是交易的基本构成元素。
-　　从支付系统的角度，交易中涉及到的资金流是资金从一个账户流向另一个账户。发起交易的一方，被称之为交易主体，他可以是个人，也可以是一个机构。
-资金从该主体所拥有的账户中流出。 而接收交易的一方，被称为交易对手，他也可以是个人，或者机构。
-账户体系介绍
+考虑要素
 
-账户体系设计整体原则是参考会计学原理关于......
+在支付系统中，账户的建模，主要是从如下几个方面来考虑：
+
+
+交易的需求: 比如检查账户是否被锁定、余额是否足够、是否有效等。
+记账的需求: 按照公司会计需求记录账户上的所有行为，包括支出、充值、转账等。
+对账的需求: 包括和支付渠道、商户、个人的对账需求，核对交易和账户余额是否正确。
+风控的需求: 如反洗钱、反欺诈等，都需要依赖于账户体系来提供核心数据。
+信用的需......
         </div>
     </a>
     
@@ -494,26 +499,22 @@
 
 <div class="post-preview">
 
-    <a href="/posts/pay/【账户】账户体系-账户建模/">
+    <a href="/posts/pay/【账户】账户体系-账户设计/">
         <h2 class="post-title">
-            【账户】账户体系-账户建模
+            【账户】账户体系-账户设计
         </h2>
         <h3 class="post-subtitle">
-            大账务系统-账户体系-账户建模
+            大账务系统-账户体系-账户设计
         </h3>
         <div class="post-content-preview">
-            账户建模要素
+            账户概念
 
-考虑要素
+账户设置，一般是从交易开始的。 交易的实现必须有账户的支持，账户是交易的基本构成元素。
+　　从支付系统的角度，交易中涉及到的资金流是资金从一个账户流向另一个账户。发起交易的一方，被称之为交易主体，他可以是个人，也可以是一个机构。
+资金从该主体所拥有的账户中流出。 而接收交易的一方，被称为交易对手，他也可以是个人，或者机构。
+账户体系介绍
 
-在支付系统中，账户的建模，主要是从如下几个方面来考虑：
-
-
-交易的需求: 比如检查账户是否被锁定、余额是否足够、是否有效等。
-记账的需求: 按照公司会计需求记录账户上的所有行为，包括支出、充值、转账等。
-对账的需求: 包括和支付渠道、商户、个人的对账需求，核对交易和账户余额是否正确。
-风控的需求: 如反洗钱、反欺诈等，都需要依赖于账户体系来提供核心数据。
-信用的需......
+账户体系设计整体原则是参考会计学原理关于......
         </div>
     </a>
     
@@ -690,21 +691,21 @@ OSI是七层网络架构
     <div class="tags">
         
             
-            <a href="/tags/网络" title="网络" rel="4">网络</a>
-            
-        
-            
-        
-            
-        
-            
-        
-            
             <a href="/tags/支付" title="支付" rel="8">支付</a>
             
         
             
             <a href="/tags/账务" title="账务" rel="7">账务</a>
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/网络" title="网络" rel="4">网络</a>
+            
+        
             
         
             
@@ -958,7 +959,7 @@ input::-webkit-input-placeholder {
         </li>
       
         <li>
-          <a href="/posts/pay/【账户】账户体系-账户设计/">【账户】账户体系-账户设计</a>
+          <a href="/posts/pay/【账户】账户体系-账户建模/">【账户】账户体系-账户建模</a>
         </li>
       
     </ul>
