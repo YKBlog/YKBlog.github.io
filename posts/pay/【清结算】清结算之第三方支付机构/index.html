@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="dNVWpYUQN4ENQD-usF1vaBSIu_gnMcxvsVYzmELomoA">
+    <meta name="baidu-site-verification" content="9FxBYJOcht">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="YKBlog | 杨凯 | 支付 | 金融 ｜ Java | 架构 | 网络">
+    <meta name="keyword" content="YK, YKBlog, 杨凯, 杨凯的博客, 支付, 账务, 清结算, 金融, Java, 架构, 网络">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【清结算】清结算之第三方支付机构 - YK Blog - 杨凯 | Java
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.top/posts/pay/【清结算】清结算之第三方支付机构/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-pay.jpeg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#清结算" title="清结算">清结算</a>
+                            
+                              <a class="tag" href="/tags/#结算" title="结算">结算</a>
+                            
+                              <a class="tag" href="/tags/#清算" title="清算">清算</a>
+                            
+                              <a class="tag" href="/tags/#第三方支付" title="第三方支付">第三方支付</a>
+                            
+                              <a class="tag" href="/tags/#分账" title="分账">分账</a>
+                            
+                              <a class="tag" href="/tags/#网联" title="网联">网联</a>
+                            
+                        </div>
+                        <h1>【清结算】清结算之第三方支付机构</h1>
+                        <h2 class="subheading">第三方支付公司的清结算业务介绍和架构设计</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2019-02-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="支付领域清结算总括">支付领域清结算总括</h2>
+<hr>
+<h3 id="名企支付架构">名企支付架构</h3>
+<p>每个公司根据其业务和公司发展的不同阶段，所设计的支付系统也会有所不同。我们先看一下互联网公司一些典型的支付系统架构。</p>
+<blockquote>
+<p>以下架构是这些公司的支付子公司或者支付的部门的支付架构；所以是站在第三方支付机构角度去设计的架构，跟业务是解耦的。</p>
+</blockquote>
+<h4 id="支付宝">支付宝</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/alipay-pay.png" alt=""></p>
+<h4 id="美团">美团</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/meituan-pay.png" alt=""></p>
+<h4 id="京东">京东</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/jd-pay.png" alt=""></p>
+<h4 id="去哪儿">去哪儿</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/qunar-pay.png" alt=""></p>
+<h4 id="经典架构">经典架构</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/classic-pay.jpg" alt=""></p>
+<h4 id="支付经典流程">支付经典流程</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/alipay-pay-flow.png" alt=""></p>
+<h3 id="写在前面的话">写在前面的话</h3>
+<p>看了主流第三方支付公司的架构，有没有看出来有什么共性？</p>
+<blockquote>
+<p>以下是个人理解和总结，不一定准确。</p>
+</blockquote>
+<ul>
+<li>在支付领域，比较核心和重要的就是支付交易和资金管理；支付交易包括交易、支付、渠道和收银台等；资金管理包括账务、会计、清结算和对账等。</li>
+<li>在支付领域，一般清算泛指清分和结算，一般设计清算中心，包含清分和结算的工作；如果细分清算系统的话，支付领域的清算系统跟银行类似，也是做同行业跨机构的清算服务，只是第三方支付现在很少有同行的清算业务，即使需要也是通过银行或网联进行。</li>
+<li>在支付领域，清结算也很少独立成比较大的体系，除非公司部门特别细分；一般同属资金管理平台，即大账务划在一个体系，这样业务开展更顺一些。</li>
+</ul>
+<p>账务、清结算相关的系统调用简答流程：<br>
+　　交易-&gt;清分-&gt;账务-&gt;对账-&gt;结算-&gt;渠道</p>
+<blockquote>
+<p>整个支付领域的各个系统的调用实际上更复杂，下面有流程图单独结算资金管理平台的系统调用流程。</p>
+</blockquote>
+<h2 id="支付清结算概述">支付清结算概述</h2>
+<hr>
+<h3 id="支付中清结算的概念">支付中清结算的概念</h3>
+<h4 id="清算">清算</h4>
+<p>在《网上支付与结算》中的定义，指按照一定的规则和制度安排对经济活动中形成的多重债权债务关系进行货币的结清的过程和行为。<br>
+　　清算是一个核对过程，将多方的资金往来对账、核对、汇总、计算的过程，清算没有资金转移，只是对交易进行核对、计算、汇总、对账等动作。<br>
+　　清算是交易资金清算的过程，而这个过程就是整理、分类好每个清算对象（商户、用户、银行）的资金情况的过程。<br>
+　　不同机构之间的资金转结，外部渠道和收单机构之间资金交收。<br>
+　　简单说就是算账，算好账中资金的来往情况，并计算每一笔交易的成本，利润，债权等，并汇总出来。</p>
+<h4 id="结算">结算</h4>
+<p>将清算过程产生的待结算债权债务，在收付款人金融机构之间进行财务处理、账簿记录，以完成资金最终转移的过程。最关键的点在于发生了资金的转移。<br>
+　　结算是指依据交易数据对不同结算对象进行资金分类和汇总，并完成资金划拨。<br>
+　　同一个机构间的资金转结，收单机构将商户应收资金结算给商户。<br>
+　　简单说就是结算是资金划拨的过程，将清算计算好的账户的债务债权（信息流），通过银行完成扣除，支付的（资金流的划拨）过程。</p>
+<ul>
+<li>支付清算体系中，支付机构之间为清算关系，支付机构和商户&amp;消费者之间为结算关系。</li>
+</ul>
+<h4 id="计费">计费</h4>
+<ul>
+<li>按照规则，算出要收取的费用。</li>
+<li>费用可以是手续费、佣金、结算费用项等。</li>
+</ul>
+<h4 id="分账">分账</h4>
+<p>分账，就是支付机构帮助平台商，将资金分别结算给对应的供应商。
+　　对于收单类产品，三方支付利用自建的支付账户体系，协助商户/个人进行资金清算并做种结算给企业公户或个人私户的过程。<br>
+　　分账系统是指在符合国家结算支付法律法规的前提下，为实现电子商务业务的交易安全和资金安全，通过银行与电商交易平台交易系统间技术的联接，以账户独立管理及会员支付密码验证等方式促进对平台交易的资金监控及交易管控，为电商交易平台提供平台账户管理、资金清结算以及交易资金管控等综合业务服务。
+<strong>分账有两种</strong>：</p>
+<ol>
+<li>平台商自己给供应商分账，一般针对自营商品。</li>
+<li>收单机构给供应商分账，一般针对非自营商品。</li>
+</ol>
+<h3 id="清结算的作用">清结算的作用</h3>
+<p>第三方支付中的清结算的作用简单概括有以下两点：</p>
+<ol>
+<li>将分给各方多少钱计算清楚。</li>
+</ol>
+<blockquote>
+<p>在第三方支付中主要牵扯方有支付公司、商户、银行、分润方。</p>
+</blockquote>
+<ol start="2">
+<li>将各方的钱划到相应的账户中（含实户和虚户）。</li>
+</ol>
+<blockquote>
+<p>第三方支付建立虚户的原因是想让资金形成闭环，增强用户的粘性。</p>
+</blockquote>
+<h3 id="清结算为什么要分离">清结算为什么要分离</h3>
+<ol>
+<li>实时清算，定时结算，提高系统效率。</li>
+<li>清算环节涉及的问题较多，将清算结算分离可以保证对账清晰，问题追溯更容易。</li>
+<li>能够处理的更复杂的业务场景，如多方分润，手续费，不同供应商有不同的账期设置（结算时间T+1或者是D0），先将资金清算清楚，再按指定的规则倒时进行结算。</li>
+</ol>
+<blockquote>
+<p>在支付平台进行清结算的时候，财务系统也会自己做一套帐，这个帐是按照财务会计准则来做的。只有在支付平台和财务系统的清结算结果相同，财务才可以完成结算打款（资金调拨）。</p>
+</blockquote>
+<h2 id="清结算流程">清结算流程</h2>
+<hr>
+<h3 id="经典流程">经典流程</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/pay-settlement.png" alt="">
+<strong>手续费</strong>：商户使用支付公司的支付服务需要缴纳的费用；就是经常说的通道费或渠道费。</p>
+<blockquote>
+<ul>
+<li>目前手续费的主要收费方式有按笔收费、按一定比例收费、包年收费以及这三种收费方式的组合。一般收费方式会在与商户签订合同时进行说明。</li>
+<li>PS：支付公司使用银行通道的费用付根据每家银行的交易金额（对账无误后的金额）及费率进行计算，常见的结算方式是月结/季结/包年。</li>
+</ul>
+</blockquote>
+<p><strong>分润</strong>：就是分润方分取利润；分润方可以有多方。</p>
+<blockquote>
+<p>比如苏宁易付宝的商户苏宁易购平台上有很多商户入驻，苏宁易购会分取入驻商户一定的利润。那么此时分润方主要是苏宁易购、苏宁易购平台商户。</p>
+</blockquote>
+<p><strong>交易</strong>：主要包含支付订单的金额，交易主体等相关信息；一般是订单维度对应的支付单。<br>
+<strong>结算</strong>：结算是支付平台发起的给商户打款行为，也有可能不发生真正的资金流，结算发生时，平台把钱结算到商户的虚拟账户（待提现账户）。结算周期的长短决定资金在平台停留多久，常见的结算周期是t+0和t+1（实时结算和跨天结算）。</p>
+<blockquote>
+<ul>
+<li>虚拟账户可以让资金在平台形成闭环；比如支付宝上的，提供资金理财服务，资金没有流出平台，只是信息流做了一次变更，当然买基金和股票的话也有资金流的划转。 即使形不成资金闭环，资金在平台多放一天，平台也可以多挣一天的利息。</li>
+<li>虚拟账户也可以减低资损风险；比如结算发生了bug，多给商户打款了，设置了提现周期的话，可以及时止损，尽快代扣回来损失。</li>
+</ul>
+</blockquote>
+<h3 id="清结算领域上下游">清结算领域上下游</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/pay-clearing-1.png" alt=""></p>
+<ul>
+<li>清算核心负责整体清算模型的运转，所有跟外部机构有清算需求的业务，都经过清算核心，包括前面提到的复杂支付渠道。具体的清算指令发送，是由几个通信前置来完成的。</li>
+<li>支付核心和清算之间的关系非常明确，支付核心调用清算核心进行清算请求，清算核心清算完毕之后，反馈给支付核心。</li>
+</ul>
+<h3 id="资金管理平台流程">资金管理平台流程</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/finance-arch-n.jpeg" alt=""></p>
+<h2 id="清结算系统设计">清结算系统设计</h2>
+<hr>
+<h3 id="清算系统">清算系统</h3>
+<p>清算系统中最重要的功能是对各种支付进行记账；调用银行网关、资管系统，对账、渠道管理等功能。<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-alipay.jpeg" alt="">
+<strong>清算指令处理时序图</strong><br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/pay-clearing-3.png" alt="">
+<strong>清算实体模型</strong><br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-bean.png" alt="">
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/pay-clearing-2.png" alt="">
+<strong>清算服务分类</strong><br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-category.jpg" alt="">
+<strong>清算指令的状态</strong><br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-status.png" alt=""></p>
+<h3 id="结算系统">结算系统</h3>
+<p>结算系统中最重要的就是各种资金情况的计算、汇总、报表等。这里的计算和汇总是针对商户或者用户的，报表等做给运营人员和财务人员的，将对账之后的每一笔的交易计算出在结算日期（D0或者T+1）的结算金额，而这个结算的过程，财务人员也会进行对账，并最终得到结算结果，然后在资金管理系统完成资金划拨的过程。
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/settlement-info.jpg" alt=""></p>
+<ul>
+<li>结算和对账的关系：对不平不结算</li>
+</ul>
+<h3 id="计费系统">计费系统</h3>
+<p>计费是手段，结算才是目的。<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/settlement-billing.jpg" alt=""></p>
+<h3 id="分账系统">分账系统</h3>
+<p>为平台商户提供资金清算服务，平台商户向支付公司发送资金清算请求，由支付公司替平台商户将资金清算给平台中的商家，从而避免平台商户涉及“二清”风险。<br>
+　　分账系统的所有资金流走的都是银行内部户。互联网交易平台无法触碰资金，且清算也是由银行进行清算。这样就能够有效的保证平台下方入驻商户的资金安全性。<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/sub-account.png" alt=""></p>
+<h4 id="分账参与方：">分账参与方：</h4>
+<ul>
+<li>主商户：收单商户，支付成功的金额由主商户分给子商户。</li>
+<li>子商户：被主商户分账的商户（原则上也可以是个人，需要结合具体场景，且注意风控）。</li>
+</ul>
+<h4 id="分账模式：">分账模式：</h4>
+<ol>
+<li>按照是否过主商户的账户来区分：</li>
+</ol>
+<ul>
+<li>过账 ：资金过主商户账户。</li>
+<li>不过账：不过主商户基本账户或未结算账户，主商户收支明细中会记录分账信息。</li>
+</ul>
+<ol start="2">
+<li>按照系统调用/商户发指令来区分：</li>
+</ol>
+<ul>
+<li>直接清分（实时清分）：交易时带上分账信息，后续系统直接进行分账。</li>
+<li>T日交易，T+N日分账：交易时候不带分账信息，事后商户再确认分账。</li>
+</ul>
+<h2 id="网联">网联</h2>
+<hr>
+<p>网联清算有限公司（NetsUnion Clearing Corporation，简称NUCC）是经中国人民银行批准成立的非银行支付机构网络支付清算平台的运营机构。在中国人民银行指导下，由中国支付清算协会按照市场化方式组织非银行支付机构以“共建、共有、共享”原则共同参股出资，于2017年8月在京注册成立。<br>
+　　网联是中华人民共和国网联清算有限公司运营的第三方支付机构统一清算平台。<br>
+　　由中国支付清算协会组织发起设立。主要处理由非银行金融机构发起的涉及银行账户的网络支付业务，受中国人民银行监管。<br>
+<strong>网联成立背景</strong><br>
+　　2002年在银联成立之初，还没有第三方支付的概念，收单业务依然是各商业银行的市场。银联于2003年成立子公司银联商务，专门做银行卡收单业务，自身则专注于交易转接、清算和银联卡品牌的经营，已经逐渐脱离“第一方支付”的角色。在2004年，马云来到刚刚成立的中国银联总部洽谈在淘宝网引入银联支付，并没有得到支持。 当银联意识到线上收单的重要性，已经是10年后了。<br>
+　　根据央行统计数据显示，我国第三方机构网络支付业务交易规模从2011年9万亿元增长到2017年的143万亿元，年复合增长率为98.5%。这个严重威胁到央行的清算地位，而法律规定所有的清算服务只能是银行。所有无论是利益或者法律层面，所以网联的成立是必须的。</p>
+<h3 id="直连模式">直连模式</h3>
+<p>没有网联之前， 支付机构可以通过将钱转入自己的备付金账户，再转入其它银行，从而实现原来只有央行才能做到的“跨行清算”，但是中间明显并没有央行参与。<br>
+　　也就是说，央行和各大银行都无法掌握资金的准确流向，给金融监管带来很大的困难，成为某些人洗钱、套现的途径
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-direct-conn.png" alt=""></p>
+<ul>
+<li>第三方支付机构从事跨行清算业务指的是：如果第三方支付机构直接连接各大银行。</li>
+<li>第三方支付机构直连银行的方式，各家银行的清算就有某家第三方支付机构来完成。</li>
+</ul>
+<h3 id="网联模式">网联模式</h3>
+<p>网联的目的是统一支付清算，由此做到央行监控线上支付市场。<br>
+　　网联只是一个清算平台，并不直接开展支付业务，保持中立性。网联的成立，在一定程度上能够纠正第三方支付机构违规从事跨行清算业务，不需要也不能再直接对接银行，而是通过网联平台直接与各家银行对接。<br>
+　　现在的是备付金是必须的，只是中间多了一层网联，但是在断直连大限被延期之后，现在各大支付机构在银联和网联之间不断切换流量，因为网联作为一个新的系统，还是有点脆弱的。
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-nucc.png" alt=""></p>
+<ul>
+<li>网联成立后，第三方支付将由两层架构变成三层架构，网联将承担第三方支付机构的集中清算职能。央行牵头成立网联的主要意义在于监管机构需要看清楚第三方支付的资金流向。</li>
+<li>网联成立后，支付机构与银行多头连接开展的业务将迁移到网联平台处理，支付机构内部的跨行资金流动必须经由网联平台清算，将改变支付机构通过客户备付金分散存放变相开展跨行清算业务的情况，网联可以掌握支付机构的资金流向的详细信息。</li>
+</ul>
+<h3 id="建立网联的好处">建立网联的好处</h3>
+<ol>
+<li>统一支付清算</li>
+</ol>
+<blockquote>
+<p>网联的核心工作，是为非银支付机构提供统一支付清算支持，实现非银机构和商业银行的一点接入。</p>
+</blockquote>
+<ol start="2">
+<li>监管在线支付</li>
+</ol>
+<blockquote>
+<p>网联可以获取所有的交易数据，有了交易数据后，网联就可以执行对支付机构的监督工作了。<br>
+　　于此同时，这对支付机构也是一种保护，在支付宝、微信支付走出国门之际，在国际竞争中也能够在合规的角度得到国家的背书。</p>
+</blockquote>
+<ol start="3">
+<li>破解数据垄断</li>
+</ol>
+<blockquote>
+<p>支付机构，特别是微信、支付宝这样的巨头，因大量用户带来海量数据，这些数据巨头垄断形成信息孤岛是极不利于金融产业的监控发展。<br>
+　　网联的建立，作为清算平台打破了各个信息孤岛，同时也整合了整个的线上支付数据。</p>
+</blockquote>
+<ol start="4">
+<li>持中小支付机构</li>
+</ol>
+<blockquote>
+<p>网联拉平了第三方支付公司的银行端对接能力。<br>
+　　因为之前是银行直联模式，所以每一家第三方支付公司对于银行接口费用的谈判能力差别很大。交易体量越大银行给的成本越低。</p>
+</blockquote>
+<ol start="5">
+<li>利好中小银行</li>
+</ol>
+<blockquote>
+<p>在没有网联的情况下， 中小支付机构要连接众多银行来实现线上支付，而中小银行也要连接两百多家支付机构，其中商务和技术投入成本巨大的。<br>
+　　网联成立，使得中小银行只要对接网联，即可在支付市场上分一杯羹。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>参考资料：<br>
+<a href="https://www.jianshu.com/p/ab60e099933f" target="_blank" rel="noopener">第三方支付清结算</a><br>
+<a href="https://blog.csdn.net/weikeke410/article/details/84323636" target="_blank" rel="noopener">第三方支付清结算概况</a><br>
+<a href="http://www.woshipm.com/pd/640373.html" target="_blank" rel="noopener">浅析支付系统的整体架构</a><br>
+<a href="https://blog.csdn.net/program_red/article/details/53609030" target="_blank" rel="noopener">清结算产品设计</a><br>
+<a href="https://blog.csdn.net/weikeke410/article/details/84325375" target="_blank" rel="noopener">网联详解</a><br>
+<a href="http://bond.jrj.com.cn/2018/06/04130524633870.shtml" target="_blank" rel="noopener">网联是干什么的</a><br>
+<a href="https://zhuanlan.zhihu.com/p/25528156" target="_blank" rel="noopener">支付：计费和结算</a><br>
+<a href="http://www.woshipm.com/pd/1746737.html" target="_blank" rel="noopener">分账平台设计</a><br>
+<a href="http://www.zcaijing.com/zfqstx/111685.html" target="_blank" rel="noopener">第三方支付分账清算体系</a><br>
+<a href="https://mp.weixin.qq.com/s/5lp231M0g16B_N7pjGk_Qg?" target="_blank" rel="noopener">支付宝系统架构</a><br>
+<a href="http://www.woshipm.com/it/1198362.html" target="_blank" rel="noopener">清算核心</a></p>
+</blockquote>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/pay/【清结算】清结算之银行/" data-toggle="tooltip" data-placement="top" title="【清结算】清结算之银行"><i class="fa fa-hand-o-left"></i> 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/pay/【对账】对账系统设计/" data-toggle="tooltip" data-placement="top" title="【对账】对账系统设计">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#支付领域清结算总括"><span class="toc-nav-text">支付领域清结算总括</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#名企支付架构"><span class="toc-nav-text">名企支付架构</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#支付宝"><span class="toc-nav-text">支付宝</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#美团"><span class="toc-nav-text">美团</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#京东"><span class="toc-nav-text">京东</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#去哪儿"><span class="toc-nav-text">去哪儿</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#经典架构"><span class="toc-nav-text">经典架构</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#支付经典流程"><span class="toc-nav-text">支付经典流程</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#写在前面的话"><span class="toc-nav-text">写在前面的话</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#支付清结算概述"><span class="toc-nav-text">支付清结算概述</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#支付中清结算的概念"><span class="toc-nav-text">支付中清结算的概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#清算"><span class="toc-nav-text">清算</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#结算"><span class="toc-nav-text">结算</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#计费"><span class="toc-nav-text">计费</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#分账"><span class="toc-nav-text">分账</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#清结算的作用"><span class="toc-nav-text">清结算的作用</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#清结算为什么要分离"><span class="toc-nav-text">清结算为什么要分离</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#清结算流程"><span class="toc-nav-text">清结算流程</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#经典流程"><span class="toc-nav-text">经典流程</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#清结算领域上下游"><span class="toc-nav-text">清结算领域上下游</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#资金管理平台流程"><span class="toc-nav-text">资金管理平台流程</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#清结算系统设计"><span class="toc-nav-text">清结算系统设计</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#清算系统"><span class="toc-nav-text">清算系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#结算系统"><span class="toc-nav-text">结算系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#计费系统"><span class="toc-nav-text">计费系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#分账系统"><span class="toc-nav-text">分账系统</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#分账参与方："><span class="toc-nav-text">分账参与方：</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#分账模式："><span class="toc-nav-text">分账模式：</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#网联"><span class="toc-nav-text">网联</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#直连模式"><span class="toc-nav-text">直连模式</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#网联模式"><span class="toc-nav-text">网联模式</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#建立网联的好处"><span class="toc-nav-text">建立网联的好处</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#清结算" title="清结算">清结算</a>
+                        
+                          <a class="tag" href="/tags/#结算" title="结算">结算</a>
+                        
+                          <a class="tag" href="/tags/#清算" title="清算">清算</a>
+                        
+                          <a class="tag" href="/tags/#第三方支付" title="第三方支付">第三方支付</a>
+                        
+                          <a class="tag" href="/tags/#分账" title="分账">分账</a>
+                        
+                          <a class="tag" href="/tags/#网联" title="网联">网联</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-drupal"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo 酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'fadf5ab9ccbfedd7c447',
+        clientSecret: '942537fa2f128f590fc19dea9bae5779973bd670',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '网址：ykblog.top<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '网址：ykblog.top\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.top">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.top/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '01fc82d384955158dd75bb41fb7e5a30';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

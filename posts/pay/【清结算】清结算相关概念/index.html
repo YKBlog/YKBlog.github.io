@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="dNVWpYUQN4ENQD-usF1vaBSIu_gnMcxvsVYzmELomoA">
+    <meta name="baidu-site-verification" content="9FxBYJOcht">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="YKBlog | 杨凯 | 支付 | 金融 ｜ Java | 架构 | 网络">
+    <meta name="keyword" content="YK, YKBlog, 杨凯, 杨凯的博客, 支付, 账务, 清结算, 金融, Java, 架构, 网络">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【清结算】清结算相关概念 - YK Blog - 杨凯 | Java
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.top/posts/pay/【清结算】清结算相关概念/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-pay.jpeg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                            
+                              <a class="tag" href="/tags/#清结算" title="清结算">清结算</a>
+                            
+                              <a class="tag" href="/tags/#结算" title="结算">结算</a>
+                            
+                              <a class="tag" href="/tags/#清分" title="清分">清分</a>
+                            
+                              <a class="tag" href="/tags/#清算" title="清算">清算</a>
+                            
+                              <a class="tag" href="/tags/#备付金" title="备付金">备付金</a>
+                            
+                        </div>
+                        <h1>【清结算】清结算相关概念</h1>
+                        <h2 class="subheading">清分、清算、结算、备付金、轧差、资金调拨等概念</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2019-02-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="标准的定义">标准的定义</h2>
+<hr>
+<h3 id="清结算的官方定义">清结算的官方定义</h3>
+<p>根据《中国银联银行卡联网联合技术规范V2.1》定义：<br>
+<strong>清分 Clearing</strong><br>
+　　对交易数据依据机构和交易类型进行分类汇总，并计算结算金额的过程。<br>
+<strong>清算 Settlement</strong><br>
+　　指根据清分结果对交易数据进行净额轧差和提交并完成资金划拨的全过程。<br>
+<strong>结算 Settlement of Accounts</strong><br>
+　　指完成客户账户间资金划拨的全过程。</p>
+<h3 id="支付清算的界定">支付清算的界定</h3>
+<p>《支付清算组织管理办法》直接对“支付清算”进行了界定:</p>
+<blockquote>
+<p>本办法所称支付清算，是指支付指令的交换和计算。其中：<br>
+(一)支付指令是指参与者以纸质、磁介质或电子形式发出的,办理确定金额的资金转账命令；<br>
+(二)支付指令的交换是指提供专用的支付指令传输路径,用于支付指令的接收、清分和发送；<br>
+(三)支付指令的计算是指对支付指令进行汇总和轧差。</p>
+</blockquote>
+<h2 id="便于理解的定义">便于理解的定义</h2>
+<hr>
+<ul>
+<li>清分=记账</li>
+<li>清算=算账</li>
+<li>结算=转账</li>
+</ul>
+<h3 id="详细阐述">详细阐述</h3>
+<ul>
+<li><strong>清分</strong> 相当于记账<br>
+　　收集支付数据，按交易类型和规则进行清分；即记录下清分结果。</li>
+<li><strong>清算</strong> 相当于算账<br>
+　　根据一定的清算（计费）规则对清分后的数据或交易数据进行汇总、轧差；如果是跨行支付，还有不同行之间的支付指令的接收、交换、发送；即算清楚谁欠谁多少钱，谁该支付给谁多少钱。</li>
+<li><strong>结算</strong> 相当于转账<br>
+　　结算是对清算后的数据根据一定的账期进行资金划拨；即根据清算结果，进行资金流的支付动作。</li>
+</ul>
+<h2 id="举例理解定义">举例理解定义</h2>
+<hr>
+<h3 id="银行清结算的举例">银行清结算的举例</h3>
+<p>举个银行实际操作清结算的例子；北京时间10:01<br>
+<strong>清分</strong><br>
+　　央行清算中心记录信息流；即央行的地市级分行的清算中心记录各个银行的交易信息。</p>
+<blockquote>
+<p>北京市西城区A行支行向上海市黄浦区B行支行汇款300W。<br>
+重庆市沙坪坝区B行营业厅向武汉市江汉区A行支行汇款2600。<br>
+A行与B行全国各地在这一时刻发生的交易信息会被各地市级人民银行的清算中心一一记录。</p>
+</blockquote>
+<p><strong>清算</strong><br>
+央行清算系统对信息流进支付指令的交换和计算。</p>
+<blockquote>
+<p>这些交易信息会被汇总到省级人行的清算中心再由各省汇总到人行的清算总中心。最终计算出10:01全国A行总计给B行2亿，B行总计付给A总行1亿，二者相抵，A行付给B行1亿。</p>
+</blockquote>
+<p><strong>结算</strong><br>
+根据央行的清算结果，A行资金调拨给B行。</p>
+<blockquote>
+<p>根据账目核对的结果，A行从人行的备付金账户中划1亿到B行的备付金账户中。A行客户与B行客户发生交易的收支款项汇总填平A行备付金账户中划出去的1亿，B行用备付金账户增加的1亿分发给对应的客户。</p>
+</blockquote>
+<h3 id="通俗一点的举例">通俗一点的举例</h3>
+<p>举个打麻将的例子<br>
+<strong>清分</strong> 就是记谁给谁杠、放炮等。<br>
+<strong>清算</strong> 就是打完大家交流一下看看记的对不对，谁进多少谁出多少 (含对账)。<br>
+<strong>结算</strong> 就是出钱的给进钱的。</p>
+<h2 id="相关概念说明">相关概念说明</h2>
+<hr>
+<h3 id="轧差">轧差</h3>
+<p><strong>官方定义</strong><br>
+　　轧差是指利用抵销、合同更新等法律制度，最终取得一方对另一方的一个数额的净债权或净债务。</p>
+<blockquote>
+<p>轧差是控制双边信用风险合约（如远期合约、掉期）的最常见方法之一，包括支付轧差（payment netting）、出清轧差（closeout netting）、跨产品轧差（cross-product netting）几种形式。</p>
+</blockquote>
+<p><strong>举例说明</strong><br>
+　　银行A和银行B，发生在某一自然日；A欠B10万元，B欠A4万元，通过轧差，日终清算的时候，A对B的净欠额为6万元，即A向B支付6万元。</p>
+<h4 id="轧差的好处">轧差的好处</h4>
+<ul>
+<li>提供效率，节省时间</li>
+</ul>
+<blockquote>
+<p>没有轧差，A需向B支付10万元，B需向A支付4万元，发生了两次支付行为；轧差之后，只需要A需向B支付6万元，提高了跨行转账或资金调拨的效率。</p>
+</blockquote>
+<ul>
+<li>降低信用风险，减少资损</li>
+</ul>
+<blockquote>
+<p>没有轧差，B需要向A支付4万元，而A需向B支付10万元。假设B在向A支付4万元的过程中没有意识到A会违约，如果A已经得到B支付的4万元，则B可能无法收回其10万元，那么其信用损失将大于轧差后的6万元。</p>
+</blockquote>
+<h4 id="清算和轧差的区别">清算和轧差的区别</h4>
+<p>清算包括支付指令的交换和计算，支付指令的计算主要是汇总和轧差；即轧差属于清算的一部分。</p>
+<blockquote>
+<p>可以先轧差再清算，也可以不轧差直接清算，只要账能对平，所以两个是不同概念。</p>
+</blockquote>
+<h3 id="资金调拨">资金调拨</h3>
+<p>未找到官方定义，这里就简单说下个人的理解。<br>
+　　简单的说就是资金转移；对于银行之间就是各个银行在央行的备付金进行的划转操作，对于企业或者个人来说就是A向B的转账操作。<br>
+　　在清结算概念里，就是完成清算之后，一方向另一方支付多少钱，即转账或者结款的操作。就是明确通过何种渠道，拿回应收的钱，付出应付的钱。</p>
+<h3 id="头寸">头寸</h3>
+<p>头寸就是资金，指的是银行当前所有可以运用的资金的总和。<br>
+　　头寸（position）也称为“头衬”就是款项的意思，是金融界及商业界的流行用语。头寸指投资者拥有或借用的资金数量。</p>
+<blockquote>
+<p>在金融市场中（期货或股票），在期货开户交易中建仓时，买入期货合约后所持有的头寸叫多头头寸，简称多头；卖出期货合约后所持有的头寸叫空头头寸,简称空头。</p>
+</blockquote>
+<h3 id="备付金">备付金</h3>
+<p>可以阅读《支付机构客户备付金存管办法》全文，对备付金的使用和管理有详细的介绍，下文会列出部分办法内容。<br>
+　　支付机构客户备付金（简称：备付金；英文名：provisions），是指商业银行存在中央银行的超过法定存款准备金率的那部分存款，一般称为超额准备金。广义的支付准备金，包括库存现金和在中央银行的存款，前者叫现金准备，后者叫存款准备，其中存款准备金是主体。
+　　中国统称的支付准备金，即备付金，是狭义上的存款准备，即商业银行和其他金融机构存入中央银行的存款。
+　　指支付机构为办理客户委托的支付业务而实际收到的预收待付货币资金。
+　　备付金由银行托管，备付金银行分为存管银行和合作银行。</p>
+<h4 id="备付金监管办法">备付金监管办法</h4>
+<p>人民银行公布的《非金融机构支付服务管理办法》中，对支付机构接受客户“备付金”作出了比较详细的监管规定。</p>
+<ol>
+<li>支付机构接受客户备付金时，只能按收取的支付服务费向客户开具发票，不得按接受的客户备付金金额开具发票。</li>
+<li>支付机构接受的客户备付金不属于支付机构的自有财产。支付机构只能根据客户发起的支付指令转移备付金。禁止支付机构以任何形式挪用客户备付金。</li>
+</ol>
+<blockquote>
+<p>对于监管机构来说，对支付宝等第三方支付企业的备付金进行监管，是为了控制第三方支付企业的道德风险、操作风险等，保证客户利益。<br>
+　　换句话说，就是支付企业倒了，要让你在这个企业开立的账号上的资金能够有一定保障。</p>
+</blockquote>
+<p><strong>举例理解</strong></p>
+<blockquote>
+<p>当用户在电商网站（如淘宝网）购买商品，下单后，资金并不是立即进入商家的账户上，而是暂存在第三方支付公司。当用户确认接收到商品后，资金从第三方支付公司转到商家账户上。这个资金被称为备付金。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>参考资料：<br>
+<a href="https://www.zhihu.com/question/19892912" target="_blank" rel="noopener">银行业务中的清算和结算的过程</a></p>
+</blockquote>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/pay/【清结算】清结算演进过程/" data-toggle="tooltip" data-placement="top" title="【清结算】清结算的演进过程"><i class="fa fa-hand-o-left"></i> 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/pay/【清结算】清结算之银行/" data-toggle="tooltip" data-placement="top" title="【清结算】清结算之银行">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#标准的定义"><span class="toc-nav-text">标准的定义</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#清结算的官方定义"><span class="toc-nav-text">清结算的官方定义</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#支付清算的界定"><span class="toc-nav-text">支付清算的界定</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#便于理解的定义"><span class="toc-nav-text">便于理解的定义</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#详细阐述"><span class="toc-nav-text">详细阐述</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#举例理解定义"><span class="toc-nav-text">举例理解定义</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#银行清结算的举例"><span class="toc-nav-text">银行清结算的举例</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#通俗一点的举例"><span class="toc-nav-text">通俗一点的举例</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#相关概念说明"><span class="toc-nav-text">相关概念说明</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#轧差"><span class="toc-nav-text">轧差</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#轧差的好处"><span class="toc-nav-text">轧差的好处</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#清算和轧差的区别"><span class="toc-nav-text">清算和轧差的区别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#资金调拨"><span class="toc-nav-text">资金调拨</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#头寸"><span class="toc-nav-text">头寸</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#备付金"><span class="toc-nav-text">备付金</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#备付金监管办法"><span class="toc-nav-text">备付金监管办法</span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                        
+                          <a class="tag" href="/tags/#清结算" title="清结算">清结算</a>
+                        
+                          <a class="tag" href="/tags/#结算" title="结算">结算</a>
+                        
+                          <a class="tag" href="/tags/#清分" title="清分">清分</a>
+                        
+                          <a class="tag" href="/tags/#清算" title="清算">清算</a>
+                        
+                          <a class="tag" href="/tags/#备付金" title="备付金">备付金</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-drupal"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo 酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'fadf5ab9ccbfedd7c447',
+        clientSecret: '942537fa2f128f590fc19dea9bae5779973bd670',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '网址：ykblog.top<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '网址：ykblog.top\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.top">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.top/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '01fc82d384955158dd75bb41fb7e5a30';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>

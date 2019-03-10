@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="dNVWpYUQN4ENQD-usF1vaBSIu_gnMcxvsVYzmELomoA">
+    <meta name="baidu-site-verification" content="9FxBYJOcht">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="YKBlog | 杨凯 | 支付 | 金融 ｜ Java | 架构 | 网络">
+    <meta name="keyword" content="YK, YKBlog, 杨凯, 杨凯的博客, 支付, 账务, 清结算, 金融, Java, 架构, 网络">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【清结算】清结算之电商行业 - YK Blog - 杨凯 | Java
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.top/posts/pay/【清结算】清结算之电商行业/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-pay.jpeg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                            
+                              <a class="tag" href="/tags/#清结算" title="清结算">清结算</a>
+                            
+                              <a class="tag" href="/tags/#结算" title="结算">结算</a>
+                            
+                              <a class="tag" href="/tags/#清分" title="清分">清分</a>
+                            
+                              <a class="tag" href="/tags/#清算" title="清算">清算</a>
+                            
+                              <a class="tag" href="/tags/#电商" title="电商">电商</a>
+                            
+                        </div>
+                        <h1>【清结算】清结算之电商行业</h1>
+                        <h2 class="subheading">电商行业中的清结算业务介绍和架构设计</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2019-02-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="电商领域清结算总括">电商领域清结算总括</h2>
+<hr>
+<p>只要有资金往来，一般都会产生支付及资金清结算需求，在电商平台中，用户在平台购买商品，会先支付货款到平台，平台再结算至商家，清结算则是发生在平台和商家间的的资金流转。</p>
+<h3 id="常见电商业务架构">常见电商业务架构</h3>
+<h4 id="电商平台标准流程">电商平台标准流程</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/e-pay.png" alt=""></p>
+<h4 id="点餐">点餐</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/settlement-daodian.png" alt=""></p>
+<h4 id="酒店">酒店</h4>
+<p>酒店结算主要分为2大类：
+下文具体介绍两种不同的结算模式。</p>
+<ol>
+<li>现付：全称“前台现付”。<br>
+客人在旅游预订网站预订下单后，去入住酒店，在离店当天结款房费。</li>
+<li>预付：全称“在线预付”。<br>
+即客人在旅游预订网站预订下单后，在线支付房费，然后去入住酒店。</li>
+</ol>
+<blockquote>
+<p>在2005年的时候，客人一般都是电话预订，所以还没有预付的概念。直到2010年左右，网银支付和在线支付起来之后，促进了在线定酒店的平台业务。</p>
+</blockquote>
+<h2 id="电商清结算概念">电商清结算概念</h2>
+<hr>
+<h3 id="电商行业清结算的概念">电商行业清结算的概念</h3>
+<h4 id="清算">清算</h4>
+<p>清算就是将买家支付的商品金额全部或部分付款给卖家的过程。</p>
+<blockquote>
+<p>清算的概念在一般电商理解中，跟银行清算的原始概念类似；即清算即为清分和结算的总称。当然不同公司的概念也不尽相同。</p>
+</blockquote>
+<p>清算是清分和结算的完整过程，是信息流和资金流完整统一的整体，否则会出现账务不符的情况。</p>
+<ul>
+<li><strong>清分</strong>是指计算资金如何分配的过程，属于信息流。</li>
+<li><strong>结算</strong>是根据清分的结果进行资金流转的过程，属于资金流。</li>
+</ul>
+<p><strong>清算分两种</strong></p>
+<ol>
+<li>平台型电商是存在于第三方托管账户，受到国家监管，清算一般是由第三方支付机构直接完成，商户的钱由第三方支付结构直接打给商户，不经过平台型电商的银行账户，否则涉嫌二清。</li>
+<li>自营型电商的钱是直接存在自己的银行账户，可以自行支配。</li>
+</ol>
+<blockquote>
+<p>后文会简单介绍下平台型电商和自营型电商；以及两者的区别。</p>
+</blockquote>
+<h2 id="电商平台业务">电商平台业务</h2>
+<hr>
+<p>电商最重要的三流：信息流（订单、对账）、资金流（支付、结算）、物流。</p>
+<h3 id="在线消费电商">在线消费电商</h3>
+<p>我们常用的电商，比如京东、淘宝、唯品会等，可以分为两类：平台型电商和自营型电商。</p>
+<ol>
+<li><strong>平台型电商</strong><br>
+　　不直接参与到买卖双方交易的电商，这种电商属于第三方，只是提供一个工具帮助买卖双方完成交易。比如淘宝、京东非自营。</li>
+<li><strong>自营型电商</strong><br>
+　　指作为卖家角色参与到交易的电商，这电商除了提供完成交易的工具之外，本身自己也是卖家。比如京东自营、唯品会、天猫超市。</li>
+</ol>
+<h4 id="平台型和自营型电商的区别">平台型和自营型电商的区别</h4>
+<ul>
+<li><strong>结算频率</strong><br>
+　　平台型电商一般结算给卖家是按笔支付，即买家确认交易完成则会结算给卖家；
+　　自营型电商与供应商结算一般是按照合同上的约定账期结算。</li>
+<li><strong>结算类型</strong><br>
+　　平台型电商结算给卖家是平台自动化完成，一般会有第三方支付公司的结算凭证为准；<br>
+　　自营型电商结算给供应商一般通过财务转账，以银行回执为准。</li>
+<li><strong>支付政策</strong><br>
+　　平台型电商如果不采用第三方支付公司的支付服务，自己需要支付牌照，支付钱款是存在于电商平台在支付公司的托管账户，否则涉嫌二清；<br>
+　　自营型电商则不需要支付牌照，支付钱款直接进入自己银行账户。</li>
+</ul>
+<h4 id="平台型电商结算流程">平台型电商结算流程</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/settlement-e.png" alt=""></p>
+<h3 id="酒店平台电商">酒店平台电商</h3>
+<p><strong>酒店现付模式</strong><br>
+回款期限一般在30到45天之间，超过90天，则需要做坏账处理。</p>
+<blockquote>
+<p>举例：一个订单6月2日入住，4日离店，2晚1间房，共计2间夜、400元房费，佣金比例是5%，则佣金为20元。这张订单会在7月1日，统一打包生成一份对账单，通过“online酒店管理系统”传给酒店，提供电子账单。酒店方一般在5-10天里对完账，并将佣金款按照对账单上的银行账号付款至OTA。<br>
+　　以上是最最理想的现付回款场景，然而实际上很多酒店都会故意延长回款期，并且会找n多理由来告知你，对账单里有很多预订是不存在的，不能付那么多的款给你。</p>
+</blockquote>
+<p><strong>酒店预付模式</strong><br>
+　　一般在次月的月初，发送对账单给酒店，酒店方很积极地会在3天内确认对账单，然后把发票寄给我们，静静地在那等待着我们的付款。偶尔会有少数酒店很认真地对账，然后告诉我们某些客人已提前取消客房，不用付款给他们。</p>
+<p></p>
+<h2 id="清结算系统">清结算系统</h2>
+<hr>
+<h3 id="经典流程">经典流程</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-flow.png" alt=""></p>
+<h3 id="结算模型">结算模型</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/clearing-model.png" alt=""></p>
+<h3 id="结算时间">结算时间</h3>
+<p>T+N：交易发生的当日之后的第N个工作日结算<br>
+D+N：交易发生的当日之后的第N个自然日结算<br>
+S+0：实时结算
+M+1：每月结算</p>
+<blockquote>
+<p>支付和结算的核心法则就是借贷相符。
+支付是用户和平台间的资金流过程，结算是平台和供应角色（商户）之间的资金流过程。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>参考资料：<br>
+<a href="https://www.jianshu.com/p/a142ce840e6f" target="_blank" rel="noopener">电商支付清算</a><br>
+<a href="https://www.jianshu.com/p/8f3cdafe9556" target="_blank" rel="noopener">电商中清结算系统设计</a><br>
+<a href="https://blog.csdn.net/newfayi/article/details/73833248" target="_blank" rel="noopener">结算平台的搭建</a></p>
+</blockquote>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/pay/【清结算】清结算演进过程/" data-toggle="tooltip" data-placement="top" title="【清结算】清结算的演进过程">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#电商领域清结算总括"><span class="toc-nav-text">电商领域清结算总括</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#常见电商业务架构"><span class="toc-nav-text">常见电商业务架构</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#电商平台标准流程"><span class="toc-nav-text">电商平台标准流程</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#点餐"><span class="toc-nav-text">点餐</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#酒店"><span class="toc-nav-text">酒店</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#电商清结算概念"><span class="toc-nav-text">电商清结算概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#电商行业清结算的概念"><span class="toc-nav-text">电商行业清结算的概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#清算"><span class="toc-nav-text">清算</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#电商平台业务"><span class="toc-nav-text">电商平台业务</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#在线消费电商"><span class="toc-nav-text">在线消费电商</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#平台型和自营型电商的区别"><span class="toc-nav-text">平台型和自营型电商的区别</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#平台型电商结算流程"><span class="toc-nav-text">平台型电商结算流程</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#酒店平台电商"><span class="toc-nav-text">酒店平台电商</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#清结算系统"><span class="toc-nav-text">清结算系统</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#经典流程"><span class="toc-nav-text">经典流程</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#结算模型"><span class="toc-nav-text">结算模型</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#结算时间"><span class="toc-nav-text">结算时间</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                        
+                          <a class="tag" href="/tags/#清结算" title="清结算">清结算</a>
+                        
+                          <a class="tag" href="/tags/#结算" title="结算">结算</a>
+                        
+                          <a class="tag" href="/tags/#清分" title="清分">清分</a>
+                        
+                          <a class="tag" href="/tags/#清算" title="清算">清算</a>
+                        
+                          <a class="tag" href="/tags/#电商" title="电商">电商</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-drupal"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo 酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'fadf5ab9ccbfedd7c447',
+        clientSecret: '942537fa2f128f590fc19dea9bae5779973bd670',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '网址：ykblog.top<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '网址：ykblog.top\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.top">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.top/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '01fc82d384955158dd75bb41fb7e5a30';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>
