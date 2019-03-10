@@ -86,13 +86,6 @@
     </url>
 
     <url>
-        <loc>http://ykblog.top/tags/%E7%BD%91%E7%BB%9C/</loc>
-        <lastmod>2019-02-10T09:34:17.045Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://ykblog.top/tags/IP/</loc>
         <lastmod>2019-02-10T09:34:17.045Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -102,13 +95,6 @@
     <url>
         <loc>http://ykblog.top/tags/%E4%BC%9A%E8%AE%A1/</loc>
         <lastmod>2019-02-17T14:38:47.663Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://ykblog.top/tags/%E8%B4%A6%E5%8A%A1/</loc>
-        <lastmod>2019-02-17T14:39:05.331Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -130,13 +116,6 @@
     <url>
         <loc>http://ykblog.top/tags/%E7%94%B5%E5%95%86/</loc>
         <lastmod>2019-03-10T03:13:58.136Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://ykblog.top/tags/%E6%94%AF%E4%BB%98/</loc>
-        <lastmod>2019-03-10T03:18:40.789Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -200,6 +179,41 @@
     <url>
         <loc>http://ykblog.top/tags/%E7%BD%91%E8%81%94/</loc>
         <lastmod>2019-03-10T03:22:09.353Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://ykblog.top/tags/%E6%94%AF%E4%BB%98/</loc>
+        <lastmod>2019-03-10T05:48:29.696Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://ykblog.top/tags/%E8%B4%A6%E5%8A%A1/</loc>
+        <lastmod>2019-03-10T05:48:29.696Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://ykblog.top/tags/%E7%BD%91%E7%BB%9C/</loc>
+        <lastmod>2019-03-10T06:20:04.469Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://ykblog.top/tags/IO/</loc>
+        <lastmod>2019-03-10T06:20:04.469Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://ykblog.top/tags/NIO/</loc>
+        <lastmod>2019-03-10T06:20:04.469Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

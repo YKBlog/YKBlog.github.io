@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="dNVWpYUQN4ENQD-usF1vaBSIu_gnMcxvsVYzmELomoA">
+    <meta name="baidu-site-verification" content="9FxBYJOcht">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="YKBlog | 杨凯 | 支付 | 金融 ｜ Java | 架构 | 网络">
+    <meta name="keyword" content="YK, YKBlog, 杨凯, 杨凯的博客, 支付, 账务, 清结算, 金融, Java, 架构, 网络">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          【账务】账务系统设计 - YK Blog - 杨凯 | Java
+        
+    </title>
+
+    <link rel="canonical" href="http://ykblog.top/posts/pay/【账务】账务系统设计/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <link rel="stylesheet" href="/css/archive.css">
+
+  <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- ga & ba script hoook -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/post/bg-header-pay.jpeg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/yk-sign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" id="intro-header">
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                            
+                              <a class="tag" href="/tags/#账务" title="账务">账务</a>
+                            
+                        </div>
+                        <h1>【账务】账务系统设计</h1>
+                        <h2 class="subheading">大账务系统设计-账务/会计整体结合设计思路</h2>
+                        <span class="meta">
+                            Posted by yangkai on
+                            2018-12-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">YangKai Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">               
+
+                <div id="content">
+                    <h2 id="背景">背景</h2>
+<hr>
+<h3 id="账务系统是什么">账务系统是什么</h3>
+<p>账务系统是采用一些会计理论（复式记账和会记科目）来记录公司业务的每一笔资金交易的流入和流出；说清楚每笔资金的来龙去脉。</p>
+<h3 id="为什么建立账务系统">为什么建立账务系统</h3>
+<ol>
+<li>保证资金安全<br>
+四重防护保证资金安全；业务校验、复试记账、日终对账、三方对账。实时、离线全方位做资金安全治理，也可以做报账系统的监控，实时发现业务问题。</li>
+<li>保证数据安全<br>
+采用财务会计处理数据的方式（红冲蓝补），做到一旦生成数据，不删除、不更新，保留原始错误数据。保证了数据的安全性、准确性、一致性。</li>
+<li>统一资金数据<br>
+资金变动相关数据全部收口在账务，记录资金变动过程的完整记录，可以说清资金的来龙去脉。</li>
+<li>统一提供资金服务<br>
+为业务线提供统一的资金平台服务和资金数据服务；满足业务系统的资金平台，财务的会计核算，外部的审计等需求。<br>
+<strong>资金平台服务</strong>：可以提供账户服务、结算服务、对账服务、资金调拨等。<br>
+<strong>资金数据服务</strong>：会计分录、财务报表、统计数据等。</li>
+<li>灵活控制<br>
+可以完成账户回滚，账户流水回放，日终余额校验，账户监控等控制；也可以灵活支持业务账相关需求。</li>
+<li>提高公司收益<br>
+提升资金的使用效率，提高财务人效，减少财务人力投入，进而提高公司收益。</li>
+</ol>
+<h2 id="账务系统架构">账务系统架构</h2>
+<hr>
+<h3 id="账务系统和其他系统的关系：">账务系统和其他系统的关系：</h3>
+<h4 id="以账务系统为核心">以账务系统为核心</h4>
+<p>业务系统 -&gt; 账务 -&gt; 会计核算 -&gt; 对账/清结算<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/account-flow.png" alt=""></p>
+<h4 id="以交易系统为核心">以交易系统为核心</h4>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/account-flow-trade.png" alt=""></p>
+<h2 id="总架构图">总架构图</h2>
+<hr>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/account.png" alt=""></p>
+<h3 id="账务系统">账务系统</h3>
+<p>账务系统是大账务系统（资金管理平台）的核心，包括：账户系统和总账平台。<br>
+账户系统：一般包括用户、商户、平台、银行等，记录每笔交易的收付金额和记录。模型如下图:<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/account-account.png" alt="">
+总账平台：主要包括记账核心和对外提供的账务服务；记账核心采用规则引擎和复式记账去设计。</p>
+<h3 id="会计系统">会计系统</h3>
+<p>会计系统主要是为财务服务的系统，包括：会计分录和财务报表。<br>
+<strong>会计分录</strong>：主要有科目、凭证（原始凭证）；核心是依据财务的会计准则存储一些财务数据。<br>
+<strong>财务报表</strong>：一般有：应收报表、实收报表、资产负债表以及审计报表等。<br>
+会计分录和财务报表的职责划分，由实际业务决定，会计分录生成的凭证可直接生成财务的主要报表做凭证，财务报表主要做报表后台和分析相关工作；也可以只生成初始数据，后续都由财务报表负责。<br>
+账户与会计科目的关系：<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/account-subject-1.png" alt=""></p>
+<h3 id="清结算系统">清结算系统</h3>
+<p>清结算系统主要依据账务数据进行资金相关的操作。包括：清算、结算、核算，主要说下结算。<br>
+<strong>结算</strong>：相对于转账，对清算后的数据根据一定的账期进行资金划拨。</p>
+<h3 id="对账系统">对账系统</h3>
+<p>顾名思义，主要做对账，一般分为业务对账和资金对账，这是按业务划分的，信息流和资金流的核对结果的处理方式一般不一样，但对账核心处理一般设计为通用模式。</p>
+<h3 id="基础平台">基础平台</h3>
+<p>基础平台一般做一些基础服务、数据服务和其他服务。不多做介绍了。</p>
+<h2 id="系统模型">系统模型</h2>
+<hr>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/account-system.png" alt="">
+	账务设计模型如此设计的优势如下</p>
+<ol>
+<li>资金安全性<br>
+　　四重防护保证资金安全；业务校验、复试记账、日终对账、三方对账。采用本地事物+分布式事务，报账数据一致性；采用财务会计处理数据的方式（红冲蓝补），做到一旦生成数据，不删除、不更新，保留原始错误数据，保证了数据的安全性、准确性。</li>
+<li>灵活拓展性<br>
+　　整个账务核心的设计，采用账户-科目一体式的规则引擎，把所有的记账操作指令化，灵活的操作所有账户、所有科目、所有记账服务的记账行为。</li>
+<li>系统稳定性<br>
+　　所有的操作都有幂等性做处理，防止重复记账以及网络抖动导致的重复报账；核心操作有异常检测和处理机制，以及最终补偿记账。</li>
+</ol>
+<h3 id="日终对账相关">日终对账相关</h3>
+<ol>
+<li>每日记账核对<br>
+　　核对前一日的入账数据，包括记账凭证和账户流水，规则如下：</li>
+</ol>
+<figure class="highlight fix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">账户流水信息的总借方金额 </span>=<span class="string"> 总贷方金额    </span></span><br><span class="line"><span class="string">核对流水借方总金额 = 记账凭证总金额</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>每日账户核对<br>
+　　核对前一日账户信息的日终余额是否正确，具体方法：</li>
+</ol>
+<blockquote>
+<p>取前两日的日终余额作为前一日的账户期初数，根据账务流水中前一日该账户的明细信息，对账户期初数加减运算，算出日终余额，该余额与账户信息中的昨日余额相同。</p>
+</blockquote>
+<ol start="3">
+<li>每日账户余额快照<br>
+　　在账户核对正确基础上，按照账户信息表中昨日余额生成所有账户的余额快照。信息包括日期、机构、科目、账户、账户类型、币种、现金账户余额、累计基数、新增基数。</li>
+</ol>
+<h3 id="记账点">记账点</h3>
+<p>需求梳理的核心是梳理清楚集团所有资金相关的业务，并根据财务的借贷科目；梳理出每一个记账点。<br>
+比如一个借贷业务的账务记账点：<br>
+<img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/account-2.png" alt=""></p>
+<h2 id="名企支付架构">名企支付架构</h2>
+<hr>
+<p>每个公司根据其业务和公司发展的不同阶段，所设计的支付系统也会有所不同。我们先看一下互联网公司一些典型的支付系统架构。</p>
+<blockquote>
+<p>以下架构是这些公司的支付子公司或者支付的部门的支付架构。</p>
+</blockquote>
+<h3 id="支付宝">支付宝</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/alipay-pay.png" alt=""></p>
+<h3 id="美团">美团</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/meituan-pay.png" alt=""></p>
+<h3 id="京东">京东</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/jd-pay.png" alt=""></p>
+<h3 id="去哪儿">去哪儿</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/qunar-pay.png" alt=""></p>
+<h3 id="经典架构">经典架构</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/classic-pay.jpg" alt=""></p>
+<h3 id="支付经典流程">支付经典流程</h3>
+<p><img src="https://raw.githubusercontent.com/YKBlog/keven-blog-img/master/img/alipay-pay-flow.png" alt=""></p>
+             
+                </div>
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/pay/【清结算】清结算之银行/" data-toggle="tooltip" data-placement="top" title="【清结算】清结算之银行"><i class="fa fa-hand-o-left"></i> 上一篇</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/pay/【对账】对账系统设计/" data-toggle="tooltip" data-placement="top" title="【对账】对账系统设计">下一篇 <i class="fa fa-hand-o-right"></i></a>
+                        </li>
+                    
+                </ul>
+             
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#背景"><span class="toc-nav-text">背景</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#账务系统是什么"><span class="toc-nav-text">账务系统是什么</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#为什么建立账务系统"><span class="toc-nav-text">为什么建立账务系统</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#账务系统架构"><span class="toc-nav-text">账务系统架构</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#账务系统和其他系统的关系："><span class="toc-nav-text">账务系统和其他系统的关系：</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#以账务系统为核心"><span class="toc-nav-text">以账务系统为核心</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#以交易系统为核心"><span class="toc-nav-text">以交易系统为核心</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#总架构图"><span class="toc-nav-text">总架构图</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#账务系统"><span class="toc-nav-text">账务系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#会计系统"><span class="toc-nav-text">会计系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#清结算系统"><span class="toc-nav-text">清结算系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#对账系统"><span class="toc-nav-text">对账系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#基础平台"><span class="toc-nav-text">基础平台</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#系统模型"><span class="toc-nav-text">系统模型</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#日终对账相关"><span class="toc-nav-text">日终对账相关</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#记账点"><span class="toc-nav-text">记账点</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#名企支付架构"><span class="toc-nav-text">名企支付架构</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#支付宝"><span class="toc-nav-text">支付宝</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#美团"><span class="toc-nav-text">美团</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#京东"><span class="toc-nav-text">京东</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#去哪儿"><span class="toc-nav-text">去哪儿</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#经典架构"><span class="toc-nav-text">经典架构</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#支付经典流程"><span class="toc-nav-text">支付经典流程</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+                <!--版权声明-->
+                <blockquote style="margin: 30px 0 20px 0;">
+                    <span class="fa fa-copyright"></span>
+                    <span>版权声明：本文为原创，欢迎转载，转载请注明出处，勿用于商业用途！</span>
+                </blockquote>
+             <!-- Featured Tags -->
+             
+                <section style="border-bottom: dotted 2px #cccccc;margin: 30px 0 35px 0;">
+                    <!-- no hr -->
+                    <h4>
+                      <span class="fa fa-tags"></span>
+                      <a href="/tags/">Tags</a>
+                    </h4>
+                    <div style="margin-top: 20px;margin-bottom: 20px;" class="tags">
+                       
+                          <a class="tag" href="/tags/#支付" title="支付">支付</a>
+                        
+                          <a class="tag" href="/tags/#账务" title="账务">账务</a>
+                        
+                    </div>
+                </section>
+              
+                <!-- 评论 -->
+                
+                    <!-- 打赏 -->
+
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="260" height="260" style="margin-left:50px;;float:left;">
+    <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/yk-blog-wx.jpg" width="270" height="270" style="margin: auto;display:block;">
+    <span style="margin-left:420px;">我在公众号与你分享更多内容</span>
+
+
+ <!--友链-->
+
+<section style="border-top: dotted 2px #cccccc;margin: 35px 0 35px 0;">
+    <h4 style="margin-top:25px;">
+        <span class="fa fa-drupal"></span> 
+        Friends
+    </h4>
+    <ul class="list-inline">
+        
+            <li><a href="https://blog.csdn.net/yangkai_hudong" target="_blank">CSDN Blog</a></li>
+        
+            <li><a href="https://hexo.io/zh-cn/" target="_blank">Hexo</a></li>
+        
+            <li><a href="https://itimetraveler.github.io/funnysite/" target="_blank">Hexo 酷站</a></li>
+        
+            <li><a href="https://tech.meituan.com/" target="_blank">美团技术博客</a></li>
+        
+    </ul>
+</section>
+ 
+
+ <!--评论-->
+<!-- Gitalk start -->
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk@latest/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<!-- 引入一个生产md5的js，用于对id值进行处理，防止其过长 -->
+<!-- Thank DF:https://github.com/NSDingFan/NSDingFan.github.io/issues/3#issuecomment-407496538 -->
+<script src="/js/md5.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'fadf5ab9ccbfedd7c447',
+        clientSecret: '942537fa2f128f590fc19dea9bae5779973bd670',
+        id: md5(window.location.pathname),
+        repo: 'ykblog.github.io',
+        owner: 'YKBlog',
+        admin: 'YKBlog',
+        distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+</script>
+ <!-- Gitalk end -->
+
+<!-- disqus start -->
+
+<!-- disqus end -->
+
+
+                
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'YK⚓️'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+
+ </script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 280px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 0.9em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!--copy 复制版权-->
+<script>
+   function setClipboardText(event){ 
+            event.preventDefault();
+            var node = document.createElement('div');
+            node.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+            var htmlData =  '作者：yangkai<br/>'
+                            + '网址：ykblog.top<br/>'
+                            + '来源：YK Blog<br/>'                          
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。<br/><br/>' 
+                            + node.innerHTML 
+                            + '</div>';
+            var textData =  '作者：yangkai\n'
+                            + '网址：ykblog.top\n'
+                            + '来源：YK Blog\n'
+                            + '著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。\n\n' 
+                            + window.getSelection().getRangeAt(0);
+            if(event.clipboardData){  
+                event.clipboardData.setData("text/html", htmlData); 
+                event.clipboardData.setData("text/plain",textData);
+            }
+            else if(window.clipboardData){  
+                return window.clipboardData.setData("text", textData);  
+            }  
+        };  
+        var content = document.getElementById("content");
+        content.addEventListener('copy',function(e){
+            setClipboardText(e);
+        });
+</script>
+
+
+
+    <!-- Image to hack wechat -->
+    <!-- 
+       <img src="https://raw.githubusercontent.com/ykblog/keven-blog-img/master/img/20190122175619.png" width="300" height="300" style="margin-left: auto; margin-right:auto; display:block;"/>
+     -->
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+ 
+ 
+    <li>
+        <a target="_blank" href="https://github.com/ykblog" style="color:#161414 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+    <li>
+        <a target="_blank" href="https://blog.csdn.net/yangkai_hudong" style="color:#ca0613 !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">C</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+ <li>
+     <a target="_blank" href="https://www.jianshu.com/u/757057e66591" style="color:#e96f5e !important"> 
+         <span class="fa-stack fa-lg">
+             <i class="fa fa-circle fa-stack-2x"></i>
+             <i class="fa  fa-stack-1x fa-inverse">简</i>
+         </span>
+     </a>
+ </li>
+ 
+
+ 
+    <li>
+        <a target="_blank" href="https://www.zhihu.com/people/ykeven/columns" style="color:#1687fb !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa  fa-stack-1x fa-inverse">知</i>
+            </span>
+        </a>
+    </li>
+
+
+ 
+
+ 
+    <li>
+        <a target="_blank" href="http://weibo.com/CSDNyangkai" style="color:#e0272f !important">
+            <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+            </span>
+        </a>
+    </li>
+
+
+
+
+ 
+
+ 
+
+ 
+
+           
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; yangkai 2019 
+                    <br>
+                    Theme by <a href="http://beantech.org">beantech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Remould by <a href="http://ykblog.top">yangkai</a>
+                  <!--
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=gietkeven&repo=ykblog.github.io&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://ykblog.top/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-132062495-1';
+    var _gaDomain = 'auto';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '01fc82d384955158dd75bb41fb7e5a30';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+</body>
+
+</html>
